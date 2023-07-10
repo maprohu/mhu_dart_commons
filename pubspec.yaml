@@ -1,6 +1,7 @@
 name: mhu_dart_commons
 version: 1.0.0
-repository: 
+description: Common utilities used in my Dart and Flutter projects
+repository: https://github.com/maprohu/mhu_dart_commons
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
