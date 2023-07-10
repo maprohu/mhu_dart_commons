@@ -1,0 +1,11 @@
+name: mhu_dart_commons
+version: 0.0.1+1
+publish_to: none
+
+executables:
+  mhu:
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+
