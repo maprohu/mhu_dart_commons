@@ -2,12 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 
 extension MhuProcecessDirectoryX on Directory {
-
   Future run(
-      String executable,
-      List<String> arguments, {
-        String? errorMessage,
-      }) async {
+    String executable,
+    List<String> arguments, {
+    String? errorMessage,
+  }) async {
     await startProcess(
       executable,
       arguments,
@@ -18,35 +17,35 @@ extension MhuProcecessDirectoryX on Directory {
   }
 
   Future<Process> startProcess(
-      String executable,
-      List<String> arguments,
-      ) {
+    String executable,
+    List<String> arguments,
+  ) {
     stdout.writeln('Starting process: $executable ${arguments.join(' ')}');
     return Process.start(
       executable,
       arguments,
-      workingDirectory: this == Directory.current ? null : this.path,
+      workingDirectory: this == Directory.current ? null : path,
       mode: ProcessStartMode.inheritStdio,
     );
   }
 
   Future<int> runWithExitCode(
-      String executable,
-      List<String> arguments,
-      ) async =>
+    String executable,
+    List<String> arguments,
+  ) async =>
       (await startProcess(executable, arguments)).exitCode;
 
   Future<String> runAsString(
-      String executable,
-      List<String> arguments, {
-        String? errorMessage,
-      }) async {
+    String executable,
+    List<String> arguments, {
+    String? errorMessage,
+  }) async {
     // late final cmd = '$executable ${arguments.join(' ')}';
 
     final started = Process.start(
       executable,
       arguments,
-      workingDirectory: this == Directory.current ? null : this.path,
+      workingDirectory: this == Directory.current ? null : path,
       mode: ProcessStartMode.normal,
     );
     final process = await started;
@@ -54,7 +53,7 @@ extension MhuProcecessDirectoryX on Directory {
     final result = process.stdout.transform(utf8.decoder).join();
 
     final stderrStream = process.stderr.listen(
-          (event) {
+      (event) {
         stderr.add(event);
       },
     );
