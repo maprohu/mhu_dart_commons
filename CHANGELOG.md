@@ -1,3 +1,8 @@
+## 1.0.3
+
+- Added RxVal
+- Added comparator tools
+ 
 ## 1.0.2
 
 - Separating 'commons' and 'io' libraries
