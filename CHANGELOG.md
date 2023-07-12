@@ -1,3 +1,7 @@
+## 1.0.5
+
+- Added MhuExitStatusException
+ 
 ## 1.0.4
 
 - setting up automated publishing on pub.dev

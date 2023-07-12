@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:mhu_dart_commons/commons.dart';
+
 extension MhuProcecessDirectoryX on Directory {
   Future run(
     String executable,
@@ -81,7 +83,11 @@ extension FutureProcessX on Future<Process> {
     final process = await this;
     final exitCode = await process.exitCode;
     if (exitCode != 0) {
-      throw ('$errorMessage (exit status $exitCode)');
+      throw MhuExitStatusException('$errorMessage (exit status $exitCode)');
     }
   }
+}
+
+class MhuExitStatusException extends MhuException {
+  MhuExitStatusException(super.message);
 }
