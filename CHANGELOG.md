@@ -1,3 +1,7 @@
+## 1.0.4
+
+- setting up automated publishing on pub.dev
+
 ## 1.0.3
 
 - Added RxVal
