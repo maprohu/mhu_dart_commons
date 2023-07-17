@@ -6,4 +6,13 @@ extension MhuMapOfRequiredValueX<K, V extends Object> on Map<K, V> {
       remove(key);
     }
   }
+
+  // V? getOpt(K key) => this[key];
+  // void setOpt(K key, V? value) {
+  //   if (value == null) {
+  //     remove(key);
+  //   } else {
+  //     this[key] = value;
+  //   }
+  // }
 }

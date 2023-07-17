@@ -1,5 +1,8 @@
 import 'dart:io';
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:path/path.dart' as path;
+
+import '../file_store.dart';
 
 extension MhuDirectoryX on Directory {
   Directory dir(String name) => dirTo([name]);
@@ -17,4 +20,13 @@ extension MhuDirectoryX on Directory {
       path.joinAll([this.path, ...name]),
     );
   }
+
+}
+
+extension MhuFileSystemEntityX on FileSystemEntity {
+  FilePath get filePath => path.split(this.path).toIList();
+}
+
+extension MhuFileX on File {
+  String get filename => filePath.last;
 }
