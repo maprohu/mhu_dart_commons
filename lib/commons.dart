@@ -19,3 +19,5 @@ export 'src/enum.dart';
 export 'src/string.dart';
 export 'src/interfaces.dart';
 export 'src/generics.dart';
+export 'src/decimal.dart';
+export 'src/bidi.dart';

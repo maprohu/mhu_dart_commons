@@ -1,3 +1,9 @@
+## 1.0.7
+
+- added features to support the protobuf meta generator
+- added Isar tools
+- added other utilities for app development
+
 ## 1.0.6
 
 - added feature for taking automated app screenshots

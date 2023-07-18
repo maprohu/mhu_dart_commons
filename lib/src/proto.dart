@@ -1,5 +1,6 @@
 import 'package:protobuf/protobuf.dart';
 
+import 'string.dart';
 import 'kt.dart';
 
 extension MhuBaseGeneratedMessageX<M extends GeneratedMessage> on M {
@@ -17,4 +18,8 @@ extension MhuBaseGeneratedMessageX<M extends GeneratedMessage> on M {
       ),
     );
   }
+}
+
+extension MhuProtoEnumX<T extends ProtobufEnum> on T {
+  String get label => name.camelCaseToLabel;
 }
