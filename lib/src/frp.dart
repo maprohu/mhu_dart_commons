@@ -93,7 +93,7 @@ class _FwImpl<T> implements Fw<T>, Disposable {
 }
 
 class _Calc<T> implements Disposable {
-  T Function(DspReg disposers) _calc;
+  final T Function(DspReg disposers) _calc;
 
   var _disposers = DspImpl();
 
@@ -497,7 +497,9 @@ extension FuCommonListX<V> on Fu<List<V>> {
   }) {
     return frw(
       map((list) {
-        if (index >= list.length) return defaultValue!;
+        if (index >= list.length) {
+          return defaultValue ?? (throw 'itemFw defaultValue is null');
+        }
         return list[index];
       }),
       (value) {
@@ -516,7 +518,9 @@ extension FuCommonListX<V> on Fu<List<V>> {
     return frw(
       fr(() {
         final list = watch();
-        if (index >= list.length) return defaultValue!;
+        if (index >= list.length) {
+          return defaultValue ?? (throw 'itemFwHot defaultValue is null');
+        }
         return list[index];
       }),
       (value) {
@@ -557,7 +561,9 @@ extension FrCommonListX<V> on Fr<List<V>> {
   }) {
     return fr(() {
       final list = watch();
-      if (index >= list.length) return defaultValue!;
+      if (index >= list.length) {
+        return defaultValue ?? (throw 'defaultValue is null');
+      }
       return list[index];
     });
   }

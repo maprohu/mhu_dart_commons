@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:mhu_dart_commons/commons.dart';
 
+import 'dispose.dart';
 import 'functions.dart';
 
 extension MhuStreamX<T> on Stream<T> {

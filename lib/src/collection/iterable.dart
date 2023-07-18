@@ -1,5 +1,4 @@
 import 'package:collection/collection.dart' as coll;
-import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 
 extension MhuIterableX<T> on Iterable<T> {
   T? maxBy<V>(

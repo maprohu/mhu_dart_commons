@@ -7,6 +7,5 @@
 pubspec.lock
 *.iml
 generated/
-lib/proto/
 *.freezed.dart
 *.g.dart

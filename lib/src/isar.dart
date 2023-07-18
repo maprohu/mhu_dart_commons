@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:isar/isar.dart';
-import 'package:mhu_dart_commons/src/collection/iterable.dart';
 import 'package:mhu_dart_commons/src/kt.dart';
 import 'package:mhu_dart_commons/src/stream.dart';
 import 'package:protobuf/protobuf.dart';
@@ -35,10 +34,12 @@ abstract class BlobRecord implements HasIsarId {
 }
 
 abstract class IsarManualId implements HasIsarId {
+  @override
   Id? id = Isar.autoIncrement;
 }
 
 mixin IsarAutoId implements HasIsarId {
+  @override
   Id? id;
 }
 

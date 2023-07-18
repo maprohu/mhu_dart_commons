@@ -1,5 +1,5 @@
 name: mhu_dart_commons
-version: 1.0.7-dev
+version: 1.0.7
 description: Common utilities used in my Dart and Flutter projects
 repository: https://github.com/maprohu/mhu_dart_commons
 
@@ -10,13 +10,14 @@ dependencies:
   path: ^1.8.3
   rxdart: ^0.27.7
   collection: ^1.17.1
-  logger: any
-  protobuf: any
-  cross_file: any
-  fast_immutable_collections: any
-  isar: any
-  freezed_annotation: any
-  decimal: any
+  logger: ^1.4.0
+  protobuf: ^3.0.0
+  cross_file: ^0.3.3+4
+  fast_immutable_collections: ^9.1.5
+  isar: ^3.1.0+1
+  freezed_annotation: ^2.4.1
+  decimal: ^2.3.3
+
 
 dev_dependencies:
   lints: ^2.0.0
