@@ -21,3 +21,8 @@ export 'src/interfaces.dart';
 export 'src/generics.dart';
 export 'src/decimal.dart';
 export 'src/bidi.dart';
+export 'src/datetime.dart';
+export 'src/math.dart';
+export 'src/random.dart';
+export 'src/binary.dart';
+export 'src/structure.dart';

@@ -5,19 +5,20 @@ import 'frp.dart';
 import 'proto.dart';
 
 Fu<F> fru<M extends GeneratedMessage, F>(
-    Fw<M> fw,
-    F Function(M m) get, {
-      DspReg? disposers,
-    }) =>
-    _Fu(
-      fr: fr(
-            () => get(fw.watch()),
-        disposers: disposers,
-      ),
-      update: (updates) => fw.rebuild((message) {
-        updates(get(message));
-      }),
-    );
+  Fw<M> fw,
+  F Function(M m) get, {
+  DspReg? disposers,
+}) {
+  return _Fu(
+    fr: fr(
+      () => get(fw.watch()),
+      disposers: disposers,
+    ),
+    update: (updates) => fw.rebuild((message) {
+      updates(get(message));
+    }),
+  );
+}
 
 class _Fu<T> implements Fu<T> {
   final Fr<T> _fr;
@@ -45,13 +46,13 @@ class _Fu<T> implements Fu<T> {
 extension FwProtoX<M extends GeneratedMessage> on Fw<M> {
   void rebuild(void Function(M message) updates) {
     update(
-          (v) => v.rebuild(updates),
+      (v) => v.rebuild(updates),
     );
   }
 
   void deepRebuild(void Function(M message) updates) {
     update(
-          (v) => v.deepRebuild(updates),
+      (v) => v.deepRebuild(updates),
     );
   }
 
@@ -60,9 +61,23 @@ extension FwProtoX<M extends GeneratedMessage> on Fw<M> {
     required void Function(S selected) updates,
   }) {
     update(
-          (v) => v.selectRebuild(
+      (v) => v.selectRebuild(
         select: select,
         updates: updates,
+      ),
+    );
+  }
+
+  Fw<F> protoField<F>({
+    required F Function(M message) get,
+    required void Function(M message, F value) set,
+  }) {
+    return field(
+      get: get,
+      set: (message, value) => message.rebuild(
+        (b) {
+          set(b, value);
+        },
       ),
     );
   }

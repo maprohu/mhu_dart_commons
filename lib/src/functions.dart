@@ -26,3 +26,15 @@ extension CallbackX<T> on void Function(T) {
     this(value);
   }
 }
+extension AsyncCallbackX<T> on Future<void> Function(T value) {
+  void Function(T value) get discardWhenBusy {
+    var working = false;
+
+    return (value) async {
+      if (working) return;
+      working = true;
+      await this(value);
+      working = false;
+    };
+  }
+}

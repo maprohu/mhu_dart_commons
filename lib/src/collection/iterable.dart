@@ -12,6 +12,24 @@ extension MhuIterableX<T> on Iterable<T> {
       );
 
   Iterable<T> get tail => skip(1);
+
+  List<T> distinct() => distinctBy((t) => t);
+
+  List<T> distinctBy(dynamic Function(T e) identity) {
+    final seen = <dynamic>{};
+    final result = <T>[];
+
+    for (final e in this) {
+      final id = identity(e);
+
+      if (!seen.contains(id)) {
+        seen.add(id);
+        result.add(e);
+      }
+    }
+
+    return result;
+  }
 }
 
 extension NullabeIterableX<T> on T? {
@@ -50,5 +68,8 @@ class _SingleElementIterator<E> implements Iterator<E> {
       return true;
     }
   }
+}
 
+extension MhuIterableNumberExtension on Iterable<num> {
+  double? get averageOrNull => isEmpty ? null : average;
 }
