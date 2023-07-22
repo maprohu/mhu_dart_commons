@@ -25,3 +25,4 @@ extension MhuMapIterableX<T> on Iterable<T> {
   IMap<K, T> uniqueIndexBy<K>(K Function(T value) key) =>
       IMap({for (final value in this) key(value): value});
 }
+
