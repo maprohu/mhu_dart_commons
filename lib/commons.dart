@@ -27,3 +27,4 @@ export 'src/random.dart';
 export 'src/binary.dart';
 export 'src/structure.dart';
 export 'src/holder.dart';
+export 'src/parse.dart';
