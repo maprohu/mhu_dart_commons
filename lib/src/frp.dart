@@ -15,6 +15,9 @@ abstract interface class Fr<T> {
 
   T read();
 
+  /// "changes" is not a great name since, by contract, the stream
+  /// includes the initial, not yet changed value.
+  /// maybe rename it to "distinctValues()" ?
   Stream<T> changes();
 }
 
@@ -82,8 +85,6 @@ class _FwImpl<T> implements Fw<T>, Disposable {
       }
     }
   }
-
-  // ValueStream<T> get stream => _subject;
 
   @override
   Stream<T> changes() => _subject;
