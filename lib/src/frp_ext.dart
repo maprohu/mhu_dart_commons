@@ -156,25 +156,40 @@ extension FrCommonListX<V> on Fr<List<V>> {
     V? defaultValue,
     DspReg? disposers,
   }) {
-    return fr(() {
-      final list = watch();
-      if (index >= list.length) {
-        return defaultValue ?? (throw 'defaultValue is null');
-      }
-      return list[index];
-    });
+    return fr(
+      () {
+        final list = watch();
+        if (index >= list.length) {
+          return defaultValue ?? (throw 'defaultValue is null');
+        }
+        return list[index];
+      },
+      disposers: disposers,
+    );
   }
 }
 
 extension FrCommonMapX<K, V> on Fr<Map<K, V>> {
+  Fr<V> itemFr(
+    K key, {
+    V? defaultValue,
+  }) {
+    return map((t) {
+      return t[key] ?? defaultValue!;
+    });
+  }
+
   Fr<V> itemFrHot(
     K key, {
     V? defaultValue,
     DspReg? disposers,
   }) {
-    return fr(() {
-      return watch()[key] ?? defaultValue!;
-    });
+    return fr(
+      () {
+        return watch()[key] ?? defaultValue!;
+      },
+      disposers: disposers,
+    );
   }
 }
 

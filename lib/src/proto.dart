@@ -42,6 +42,11 @@ extension PbMapKeyX on PbMapKey {
         PbIntMapKey(:final value) => value,
         PbStringMapKey(:final value) => value,
       };
+
+  PbMapKey Function(Object value) get withValue => switch (this) {
+        PbIntMapKey() => (value) => PbIntMapKey(value as int),
+        PbStringMapKey() => (value) => PbStringMapKey(value as String),
+      };
 }
 
 typedef StringMapEntry<T> = MapEntry<String, T>;
