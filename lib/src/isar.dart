@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
+
 import 'package:isar/isar.dart';
 import 'package:mhu_dart_commons/src/kt.dart';
 import 'package:mhu_dart_commons/src/stream.dart';
@@ -10,6 +10,7 @@ import 'package:rxdart/rxdart.dart';
 
 import 'bidi.dart';
 import 'dispose.dart';
+import 'freezed.dart';
 import 'frp.dart';
 import 'property.dart';
 

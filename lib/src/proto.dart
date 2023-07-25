@@ -1,6 +1,7 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+
 import 'package:protobuf/protobuf.dart';
 
+import 'freezed.dart';
 import 'string.dart';
 import 'kt.dart';
 
@@ -35,6 +36,8 @@ sealed class PbMapKey with _$PbMapKey {
 
   static const defaultString = PbStringMapKey('');
   static const defaultInt = PbIntMapKey(0);
+
+  // static const dummyList = PbIntMapKey(-1);
 }
 
 extension PbMapKeyX on PbMapKey {

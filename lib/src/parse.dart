@@ -1,5 +1,7 @@
 import 'package:fixnum/fixnum.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
+
+import 'freezed.dart';
+
 
 part 'parse.freezed.dart';
 
