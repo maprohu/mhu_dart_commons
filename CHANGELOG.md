@@ -1,3 +1,7 @@
+## 1.0.8
+
+- added support for protobuf Fw editor
+
 ## 1.0.7
 
 - added features to support the protobuf meta generator
