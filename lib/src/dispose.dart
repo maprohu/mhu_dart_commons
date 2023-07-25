@@ -24,7 +24,7 @@ abstract interface class DspReg {
   static const never = _DspRegNever._();
 
   static Future<T> perform<T>(
-    Future<T> Function(DspReg disposers) action,
+    FutureOr<T> Function(DspReg disposers) action,
   ) async {
     final disposers = DspImpl();
 
