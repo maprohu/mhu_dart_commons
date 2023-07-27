@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:logger/logger.dart';
+
+final _logger = Logger();
+
 class ScreenshotParams {
   static const host = 'SCREENSHOT_HOST';
   static const port = 'SCREENSHOT_PORT';
@@ -54,6 +58,15 @@ class ScreenshotsFlutter {
 
   void shutdown() {
     _send(ScreenshotMessages.quit);
+  }
+
+  static Future<ScreenshotsFlutter?> tryCreate() async {
+    if (screenshotPort == 0) {
+      _logger.w('screenshot port is 0, not connecting.');
+      return null;
+    }
+
+    return await create();
   }
 
   static Future<ScreenshotsFlutter> create() async {

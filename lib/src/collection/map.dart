@@ -1,4 +1,5 @@
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:mhu_dart_commons/src/kt.dart';
 
 extension MhuMapOfRequiredValueX<K, V extends Object> on Map<K, V> {
   void putOrRemove(K key, V? value) {
@@ -19,6 +20,8 @@ extension MhuMapOfRequiredValueX<K, V extends Object> on Map<K, V> {
   }
 
   V? get(K key) => this[key];
+
+  MapEntry<K, V>? entry(K key) => get(key)?.asEntryValue(key);
 }
 
 extension MhuMapIterableX<T> on Iterable<T> {
@@ -26,3 +29,6 @@ extension MhuMapIterableX<T> on Iterable<T> {
       IMap({for (final value in this) key(value): value});
 }
 
+extension MhuMapEntryAnyX<T> on T {
+  MapEntry<K, T> asEntryValue<K>(K key) => MapEntry(key, this);
+}
