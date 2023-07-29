@@ -13,7 +13,6 @@ int nextPowerOf2(int value) {
   return value;
 }
 
-
 T? constrainOrNull<T extends num>(T input, T min, T max) {
   if (input < min) {
     return min;
@@ -22,4 +21,16 @@ T? constrainOrNull<T extends num>(T input, T min, T max) {
     return max;
   }
   return null;
+}
+
+extension MathIterableX<T> on Iterable<T> {
+  double sumByDouble(double Function(T item) value) {
+    var result = 0.0;
+
+    for (final item in this) {
+      result += value(item);
+    }
+
+    return result;
+  }
 }
