@@ -29,3 +29,4 @@ export 'src/structure.dart';
 export 'src/holder.dart';
 export 'src/parse.dart';
 export 'src/freezed.dart';
+export 'src/service.dart';

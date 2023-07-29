@@ -12,6 +12,9 @@ import 'frp.dart' as frp;
 
 part 'frp_ext.dart';
 
+typedef Watch<T> = T Function();
+typedef Watch1<T, P1> = T Function(P1 p1);
+
 abstract interface class Fr<T> {
   T watch();
 

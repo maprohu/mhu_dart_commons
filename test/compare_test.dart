@@ -20,6 +20,7 @@ void main() {
     2.greaterThan(1, comparator: cmp).mustBeTrue;
     one.equalTo(one, comparator: cmp).mustBeTrue;
   });
+
   test("nullLast", () {
     final cmp = nullLast(compareTo<num>);
 
@@ -29,5 +30,36 @@ void main() {
     2.greaterThan(1, comparator: cmp).mustBeTrue;
     nullInt.equalTo(nullInt, comparator: cmp).mustBeTrue;
     one.equalTo(one, comparator: cmp).mustBeTrue;
+  });
+
+  test("iterable compare", () {
+    expect(
+      iterableCompare<num>([], []),
+      0,
+    );
+    expect(
+      iterableCompare<num>([1], [1]),
+      0,
+    );
+    expect(
+      iterableCompare<num>([0], [1]),
+      -1,
+    );
+    expect(
+      iterableCompare<num>([1], [0]),
+      1,
+    );
+    expect(
+      iterableCompare<num>([0, 0], [0]),
+      1,
+    );
+    expect(
+      iterableCompare<num>([0], [0, 0]),
+      -1,
+    );
+    expect(
+      iterableCompare<num>([0, 1], [0, 0]),
+      1,
+    );
   });
 }

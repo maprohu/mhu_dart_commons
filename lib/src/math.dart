@@ -12,3 +12,14 @@ int nextPowerOf2(int value) {
 
   return value;
 }
+
+
+T? constrainOrNull<T extends num>(T input, T min, T max) {
+  if (input < min) {
+    return min;
+  }
+  if (input > max) {
+    return max;
+  }
+  return null;
+}
