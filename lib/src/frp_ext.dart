@@ -148,6 +148,12 @@ extension FuCommonListX<V> on Fu<List<V>> {
       },
     );
   }
+
+  void add(V item) {
+    update((items) {
+      items.add(item);
+    });
+  }
 }
 
 extension FrCommonListX<V> on Fr<List<V>> {
