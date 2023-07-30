@@ -40,6 +40,15 @@ extension MhuIterableX<T> on Iterable<T> {
     }
   }
 
+  void zipForEachWith<V>(Iterable<V> other, void Function(T, V) fn) {
+    final it1 = iterator;
+    final it2 = other.iterator;
+
+    while (it1.moveNext() && it2.moveNext()) {
+      fn(it1.current, it2.current);
+    }
+  }
+
   Iterable<E> zipMapWith<V, E>(
     Iterable<V> other, {
     required E Function(T a, V b) mapper,
