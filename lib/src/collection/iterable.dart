@@ -1,6 +1,31 @@
 import 'package:collection/collection.dart' as coll;
+import 'package:mhu_dart_commons/commons.dart';
 
 extension MhuIterableX<T> on Iterable<T> {
+  bool get allEqualOrEmpty {
+    final it = iterator;
+    if (!it.moveNext()) {
+      return true;
+    }
+    return it.allEqualTo(it.current);
+  }
+
+  bool get allEqual {
+    final it = iterator;
+    if (!it.moveNext()) {
+      throw this;
+    }
+    return it.allEqualTo(it.current);
+  }
+
+  bool allEqualCmp(bool Function(T a, T b) equals) {
+    final it = iterator;
+    if (!it.moveNext()) {
+      throw this;
+    }
+    return it.allEqualTo(it.current, equals);
+  }
+
   T? maxBy<V>(
     V Function(T element) property, {
     int Function(V, V)? compare,
@@ -75,6 +100,22 @@ extension MhuIterableX<T> on Iterable<T> {
   }
 }
 
+bool _eq(dynamic a, dynamic b) => a == b;
+
+extension MhuIteratorX<T> on Iterator<T> {
+  bool allEqualTo(
+    T first, [
+    bool Function(T a, T b) eq = _eq,
+  ]) {
+    while (moveNext()) {
+      if (!eq(current, first)) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
 extension NullabeIterableX<T> on T? {
   Iterable<T> get nullableAsIterable {
     final self = this;
@@ -129,7 +170,6 @@ Iterable<T> infiniteSingleElementIterator<T>(T element) sync* {
 
 mixin HasParent<T> {
   T? get parent;
-
 }
 
 extension HasParentNullableX<T extends HasParent<T>> on T? {
@@ -140,4 +180,9 @@ extension HasParentNullableX<T extends HasParent<T>> on T? {
       bits = bits.parent;
     }
   }
+}
+
+extension MhuDoubleIterableX on Iterable<double> {
+  bool allRoughlyEqual([double epsilon = 0.001]) =>
+      allEqualCmp(createDoubleRoughlyEqual(epsilon));
 }
