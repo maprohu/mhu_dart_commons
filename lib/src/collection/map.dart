@@ -1,4 +1,5 @@
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+// ignore: unused_import
 import 'package:mhu_dart_commons/src/kt.dart';
 
 extension MhuMapOfRequiredValueX<K, V extends Object> on Map<K, V> {
