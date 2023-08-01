@@ -186,3 +186,9 @@ extension MhuDoubleIterableX on Iterable<double> {
   bool allRoughlyEqual([double epsilon = 0.001]) =>
       allEqualCmp(createDoubleRoughlyEqual(epsilon));
 }
+
+Iterable<int> integers({int from = 0}) sync* {
+  while (true) {
+    yield from++;
+  }
+}
