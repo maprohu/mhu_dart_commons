@@ -1,4 +1,3 @@
-import 'dart:math';
 
 int nextPowerOf2(int value) {
   assert(value >= 0);
