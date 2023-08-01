@@ -192,3 +192,17 @@ Iterable<int> integers({int from = 0}) sync* {
     yield from++;
   }
 }
+
+mixin HasNext<T> {
+  T get next;
+}
+
+extension HasNextX<T extends HasNext<T>> on T {
+  Iterable<T> get iterable sync* {
+    var item = this;
+    while (true) {
+      yield item;
+      item = item.next;
+    }
+  }
+}
