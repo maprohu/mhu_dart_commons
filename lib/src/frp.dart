@@ -100,8 +100,6 @@ class _FwImpl<T> implements Fw<T>, Disposable {
     _subject.value = _currentValue;
   }
 
-  final _roots = <_FwImpl>{};
-
   T get value => _currentValue;
 
   @override
