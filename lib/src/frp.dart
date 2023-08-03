@@ -40,16 +40,69 @@ abstract interface class Fu<T> extends Fr<T> {
   void update(void Function(T items) updates);
 }
 
+class _UpdateSession {
+  final _FwImpl updating;
+  final listeners = <void Function()>[];
+
+  _UpdateSession(this.updating);
+
+  T run<T>(T Function() action) {
+    try {
+      return action();
+    } finally {
+      for (final listener in listeners) {
+        listener();
+      }
+    }
+  }
+}
+
+class _UpdateGroup {
+  static final global = _UpdateGroup();
+
+  _UpdateSession? current;
+
+  T run<T>(_FwImpl updating, T Function() action) {
+    if (current != null) {
+      throw 'update already running';
+    }
+    final session = _UpdateSession(updating);
+    current = session;
+    try {
+      return session.run(action);
+    } finally {
+      current = null;
+    }
+  }
+
+  void runOnSessionEnd(void Function() callback) {
+    final session = current;
+    if (session == null) {
+      callback();
+    } else {
+      session.listeners.add(callback);
+    }
+  }
+}
+
 class _FwImpl<T> implements Fw<T>, Disposable {
-  final BehaviorSubject<T> _subject;
+  late T _currentValue;
+  final _subject = BehaviorSubject<T>();
+
+  final _updateGroup = _UpdateGroup.global;
 
   static _Calc? _calling;
 
   _FwImpl._({
-    required T value,
-  }) : _subject = BehaviorSubject.seeded(value);
+    required T Function(_FwImpl<T> self) value,
+  }) {
+    _currentValue = value(this);
+    _subject.value = _currentValue;
+  }
 
-  T get value => _subject.value;
+  final _roots = <_FwImpl>{};
+
+  T get value => _currentValue;
 
   @override
   T read() => value;
@@ -82,12 +135,26 @@ class _FwImpl<T> implements Fw<T>, Disposable {
 
   @override
   void set(T value) {
-    if (_subject.value != value) {
-      _subject.value = value;
+    _updateGroup.run(
+      this,
+      () => _setInternal(value),
+    );
+  }
+
+  void _updateSubject() {
+    if (_currentValue != _subject.value) {
+      _subject.value = _currentValue;
+    }
+  }
+
+  void _setInternal(T value) {
+    if (_currentValue != value) {
+      _currentValue = value;
       final downstreamCopy = Set.of(_downstream);
       for (final down in downstreamCopy) {
         down._recalc();
       }
+      _updateGroup.runOnSessionEnd(_updateSubject);
     }
   }
 
@@ -108,7 +175,7 @@ class _Calc<T> implements Disposable {
 
   final _upstream = <_FwImpl>{};
 
-  late Frr<T> frr;
+  late _FwImpl<T> frr;
 
   _Calc(this._calc);
 
@@ -124,14 +191,15 @@ class _Calc<T> implements Disposable {
     _clearUpstream();
     _disposers.dispose();
     _disposers = DspImpl();
-    return _FwImpl._withCaller(
+    final result = _FwImpl._withCaller(
       this,
       () => _calc(_disposers),
     );
+    return result;
   }
 
   void _recalc() {
-    frr.set(run());
+    frr._setInternal(run());
   }
 
   @override
@@ -141,15 +209,16 @@ class _Calc<T> implements Disposable {
   }
 }
 
-class Frr<T> extends _FwImpl<T> {
+class _Frr<T> extends _FwImpl<T> {
   final _Calc<T> _calc;
 
-  Frr._(this._calc)
+  _Frr._(this._calc)
       : super._(
-          value: _calc.run(),
-        ) {
-    _calc.frr = this;
-  }
+          value: (self) {
+            _calc.frr = self;
+            return _calc.run();
+          },
+        );
 
   @override
   Future<void> dispose() async {
@@ -160,35 +229,19 @@ class Frr<T> extends _FwImpl<T> {
   }
 }
 
-// class _FwImpl<T> extends _FrBase<T> implements Fw<T> {
-//   _FwImpl._({
-//     required T value,
-//   }) : super._(value: value);
-//
-//   set value(T value) {
-//     _set(value);
-//   }
-//
-//   void set(T value) {
-//     this.value = value;
-//   }
-//
-//   void update(T Function(T v) updates) {
-//     value = updates(value);
-//   }
-// }
-
 Fw<T> fw<T>(
   T value, {
   DspReg? disposers,
 }) =>
-    _FwImpl._(value: value)..disposeBy(disposers);
+    _FwImpl._(
+      value: (_) => value,
+    )..disposeBy(disposers);
 
 Fr<T> fr<T>(
   T Function() calc, {
   DspReg? disposers,
 }) =>
-    Frr._(
+    _Frr._(
       _Calc((_) => calc()),
     )..disposeBy(disposers);
 
@@ -228,7 +281,7 @@ Fr<T> frDsp<T>(
   T Function(DspReg disposers) calc, {
   DspReg? dsp,
 }) =>
-    Frr._(
+    _Frr._(
       _Calc(calc),
     )..disposeBy(dsp);
 
