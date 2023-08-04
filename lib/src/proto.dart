@@ -2,6 +2,7 @@
 import 'package:protobuf/protobuf.dart';
 
 import 'freezed.dart';
+import 'frp.dart';
 import 'string.dart';
 import 'kt.dart';
 
@@ -54,3 +55,9 @@ extension PbMapKeyX on PbMapKey {
 
 typedef StringMapEntry<T> = MapEntry<String, T>;
 typedef IntMapEntry<T> = MapEntry<int, T>;
+
+typedef Mfw<M extends GeneratedMessage> = Fw<M>;
+
+abstract class HasMfw<M extends GeneratedMessage> {
+  Mfw<M> get mfw;
+}

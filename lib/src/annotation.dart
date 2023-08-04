@@ -6,6 +6,4 @@ class Compose {
   const Compose();
 }
 
-class Delegate {
-  const Delegate();
-}
+
