@@ -1,3 +1,5 @@
+typedef Lazy<T> = T Function();
+
 class Late<T> {
   final T Function() _factory;
 
