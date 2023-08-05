@@ -15,5 +15,6 @@ jobs:
       - uses: dart-lang/setup-dart@d6a63dab3335f427404425de0fbfed4686d93c4f
       - run: dart pub get
       - run: dart run build_runner build
+      - run: dart test
       - run: dart pub publish --dry-run
       - run: dart pub publish -f
