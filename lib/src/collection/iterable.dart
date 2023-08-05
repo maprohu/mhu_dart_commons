@@ -117,39 +117,18 @@ extension MhuIteratorX<T> on Iterator<T> {
 }
 
 extension NullabeIterableX<T> on T? {
-  Iterable<T> get nullableAsIterable {
+  Iterable<T> get nullableAsIterable sync* {
     final self = this;
-    if (self == null) return const [];
-    return SingleElementIterable(self);
+    if (self != null) {
+      yield self;
+    }
   }
-}
 
-class SingleElementIterable<E> extends Iterable<E> {
-  final E _element;
-
-  SingleElementIterable(this._element);
-
-  @override
-  Iterator<E> get iterator => _SingleElementIterator(_element);
-}
-
-class _SingleElementIterator<E> implements Iterator<E> {
-  final E _element;
-
-  _SingleElementIterator(this._element);
-
-  @override
-  E get current => _element;
-
-  var _moved = false;
-
-  @override
-  bool moveNext() {
-    if (_moved) {
-      return false;
-    } else {
-      _moved = true;
-      return true;
+  Iterable<T> finiteIterable(T? Function(T item) next) sync* {
+    var item = this;
+    while (item != null) {
+      yield item;
+      item = next(item);
     }
   }
 }
@@ -159,7 +138,17 @@ extension MhuIterableNumberExtension on Iterable<num> {
 }
 
 extension MhuIterableAnyX<T> on T {
-  Iterable<T> get toSingleElementIterable => SingleElementIterable(this);
+  Iterable<T> get toSingleElementIterable sync* {
+    yield this;
+  }
+
+  Iterable<T> infiniteIterable(T Function(T item) next) sync* {
+    var item = this;
+    while (true) {
+      yield item;
+      item = next(item);
+    }
+  }
 }
 
 Iterable<T> infiniteSingleElementIterator<T>(T element) sync* {

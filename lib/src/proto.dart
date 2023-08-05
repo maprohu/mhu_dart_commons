@@ -41,6 +41,10 @@ sealed class PbMapKey with _$PbMapKey {
   // static const dummyList = PbIntMapKey(-1);
 }
 
+abstract class HasDefaultPbMapKey {
+  PbMapKey get defaultPbMapKey;
+}
+
 extension PbMapKeyX on PbMapKey {
   Object get value => switch (this) {
         PbIntMapKey(:final value) => value,
