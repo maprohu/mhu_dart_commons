@@ -148,6 +148,12 @@ extension FuCommonListX<V> on Fu<List<V>> {
       },
     );
   }
+
+  void add(V item) {
+    update((items) {
+      items.add(item);
+    });
+  }
 }
 
 extension FrCommonListX<V> on Fr<List<V>> {
@@ -208,7 +214,7 @@ extension FrpStreamX<T> on Stream<T> {
 
     listener = (value) {
       frw = _FwImpl._(
-        value: value,
+        value: (_) => value,
       );
       listener = frw.set;
       seeded.complete(null);
@@ -232,7 +238,7 @@ extension FrpStreamX<T> on Stream<T> {
   }
 
   Fr<T> seededVal(T seed, DspReg disposers) {
-    final frw = _FwImpl._(value: seed);
+    final frw = _FwImpl._(value: (_) => seed);
 
     final listening = listen(frw.set);
 

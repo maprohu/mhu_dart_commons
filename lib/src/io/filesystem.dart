@@ -25,6 +25,8 @@ extension MhuDirectoryX on Directory {
 
 extension MhuFileSystemEntityX on FileSystemEntity {
   FilePath get filePath => path.split(this.path).toIList();
+
+  String get name => filePath.last;
 }
 
 extension MhuFileX on File {

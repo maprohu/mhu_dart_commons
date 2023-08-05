@@ -158,3 +158,50 @@ extension CompareAnyX<T> on T {
   }) =>
       comparator(this, other) > 0;
 }
+
+int intCompare(int a, int b) => a - b;
+
+int reversedIntCompare(int a, int b) => b - a;
+
+int iterableCompare<E extends Comparable<E>>(
+  Iterable<E> a,
+  Iterable<E> b,
+) =>
+    iterableCompareNaturalOrder(
+      a,
+      b,
+      comparator: compareTo<E>,
+    );
+
+int iterableCompareNaturalOrder<E>(
+  Iterable<E> a,
+  Iterable<E> b, {
+  Comparator<E> comparator = compareNaturalOrder,
+}) {
+  final itA = a.iterator;
+  final itB = b.iterator;
+
+  bool hasA = true;
+  bool hasB = true;
+
+  while (((hasA, hasB) = (itA.moveNext(), itB.moveNext())) == (true, true)) {
+    final currentCompare = comparator(
+      itA.current,
+      itB.current,
+    );
+
+    if (currentCompare != 0) {
+      return currentCompare;
+    }
+  }
+
+  if (hasA) {
+    return 1;
+  }
+
+  if (hasB) {
+    return -1;
+  }
+
+  return 0;
+}

@@ -1,3 +1,4 @@
+
 int nextPowerOf2(int value) {
   assert(value >= 0);
 
@@ -12,3 +13,34 @@ int nextPowerOf2(int value) {
 
   return value;
 }
+
+T? constrainOrNull<T extends num>(T input, T min, T max) {
+  if (input < min) {
+    return min;
+  }
+  if (input > max) {
+    return max;
+  }
+  return null;
+}
+
+extension MathIterableX<T> on Iterable<T> {
+  double sumByDouble(double Function(T item) value) {
+    var result = 0.0;
+
+    for (final item in this) {
+      result += value(item);
+    }
+
+    return result;
+  }
+}
+
+bool doubleEqualWithin3Decimals(double a, double b) =>
+    doubleRoughlyEqual(a, b, 0.001);
+
+bool doubleRoughlyEqual(double a, double b, double epsilon) =>
+    (a - b).abs() < epsilon;
+
+bool Function(double a, double b) createDoubleRoughlyEqual(double epsilon) =>
+    (a, b) => doubleRoughlyEqual(a, b, epsilon);

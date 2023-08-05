@@ -1,3 +1,16 @@
+## 1.0.9
+
+- Small improvements and fixes:
+  - screenshots
+  - comparators
+  - iterables
+  - streams
+  - task queue
+  - math
+  - logger
+  - frp
+- Has/Composed annotations
+
 ## 1.0.8
 
 - added support for protobuf Fw editor
