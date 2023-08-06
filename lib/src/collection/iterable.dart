@@ -98,6 +98,27 @@ extension MhuIterableX<T> on Iterable<T> {
       yield item;
     }
   }
+
+  ({
+    List<T> positive,
+    List<T> negative,
+  }) partition(bool Function(T) test) {
+    final positive = <T>[];
+    final negative = <T>[];
+
+    for (final item in this) {
+      if (test(item)) {
+        positive.add(item);
+      } else {
+        negative.add(item);
+      }
+    }
+
+    return (
+      positive: positive,
+      negative: negative,
+    );
+  }
 }
 
 bool _eq(dynamic a, dynamic b) => a == b;
