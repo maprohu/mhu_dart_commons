@@ -41,8 +41,9 @@ sealed class PbMapKey with _$PbMapKey {
   // static const dummyList = PbIntMapKey(-1);
 }
 
+typedef DefaultPbMapKey = PbMapKey;
 abstract class HasDefaultPbMapKey {
-  PbMapKey get defaultPbMapKey;
+  DefaultPbMapKey get defaultPbMapKey;
 }
 
 extension PbMapKeyX on PbMapKey {

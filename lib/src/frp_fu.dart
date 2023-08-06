@@ -1,9 +1,37 @@
 part of 'frp.dart';
 
 abstract interface class Fu<T> extends Fr<T> {
-  void update(void Function(T items) updates);
+  void update(void Function(T item) updates);
+
+
+  static Fu<T> fromFr<T>({
+    required Fr<T> fr,
+    required void Function(void Function(T item) updates) update,
+  }) => _Fu(fr: fr, update: update);
 }
 
+class _Fu<T> implements Fu<T> {
+  final Fr<T> _fr;
+  final void Function(void Function(T value) updates) _update;
+
+  _Fu({
+    required Fr<T> fr,
+    required void Function(void Function(T value) updates) update,
+  })  : _fr = fr,
+        _update = update;
+
+  @override
+  Stream<T> changes() => _fr.changes();
+
+  @override
+  T read() => _fr.read();
+
+  @override
+  T watch() => _fr.watch();
+
+  @override
+  void update(void Function(T value) updates) => _update(updates);
+}
 mixin HasFu<T> implements Fu<T> {
   Fu<T> get fv;
 
