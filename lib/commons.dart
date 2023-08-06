@@ -33,3 +33,4 @@ export 'src/service.dart';
 export 'src/logger.dart';
 export 'src/annotation.dart';
 export 'src/late.dart';
+export 'src/hash.dart';

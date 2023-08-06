@@ -160,6 +160,7 @@ extension CompareAnyX<T> on T {
 }
 
 int intCompare(int a, int b) => a - b;
+int stringCompare(String a, String b) => a.compareTo(b);
 
 int reversedIntCompare(int a, int b) => b - a;
 

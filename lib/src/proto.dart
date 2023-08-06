@@ -1,4 +1,5 @@
 
+import 'package:mhu_dart_commons/commons.dart';
 import 'package:protobuf/protobuf.dart';
 
 import 'freezed.dart';
@@ -56,6 +57,11 @@ extension PbMapKeyX on PbMapKey {
         PbIntMapKey() => (value) => PbIntMapKey(value as int),
         PbStringMapKey() => (value) => PbStringMapKey(value as String),
       };
+
+  Comparator get comparator => switch (this) {
+    PbIntMapKey() => intCompare as Comparator,
+    PbStringMapKey() => stringCompare as Comparator,
+  };
 }
 
 typedef StringMapEntry<T> = MapEntry<String, T>;
