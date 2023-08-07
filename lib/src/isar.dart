@@ -30,7 +30,7 @@ abstract class HasIsarId {
   set id(Id? id);
 }
 
-abstract class BlobRecord implements HasIsarId {
+mixin BlobRecord implements HasIsarId {
   late List<byte> blob;
 }
 
@@ -39,13 +39,13 @@ abstract class IsarManualId implements HasIsarId {
   Id? id = Isar.autoIncrement;
 }
 
-mixin IsarAutoId implements HasIsarId {
+mixin IsarIdRecord implements HasIsarId {
   @override
   Id? id;
 }
 
 @collection
-class SingletonRecord extends BlobRecord with IsarAutoId {}
+class SingletonRecord with BlobRecord, IsarIdRecord {}
 
 @collection
 class SequenceRecord {
@@ -221,12 +221,25 @@ extension IsarCollectionWithCreateRecordX<M extends GeneratedMessage>
   }) async {
     final record = createRecord();
     return this.collection.recordFw(
+      id: id,
+      bidi: BiDi(
+        forward: (record) => record.proto$.value,
+        backward: (message) => createRecord()..proto$.value = message,
+      ),
+      defaultValue: record.createProto$()..freeze(),
+      disposers: disposers,
+    );
+  }
+  Future<Fw<M?>> protoRecordFwNullable({
+    required int id,
+    required DspReg disposers,
+  }) async {
+    return this.collection.recordFwNullable(
           id: id,
           bidi: BiDi(
             forward: (record) => record.proto$.value,
             backward: (message) => createRecord()..proto$.value = message,
           ),
-          defaultValue: record.createProto$()..freeze(),
           disposers: disposers,
         );
   }
@@ -290,6 +303,104 @@ extension IsarCollectionX<R extends HasIsarId> on IsarCollection<R> {
         await put(
           bidi.backward(value)..id = id,
         );
+      });
+    }).awaitBy(disposers);
+
+    disposers.add(() async {
+      await listening.cancel();
+      await resultDsp.dispose();
+    });
+
+    return Fw.fromFr(
+      fr: result,
+      set: (value) {
+        updates.add(value);
+        result.set(value);
+      },
+    );
+  }
+
+  Future<Fw<T?>> recordFwNullable<T>({
+    required int id,
+    required BiDi<R, T> bidi,
+    required DspReg disposers,
+  }) async {
+    T? parse(R? record) => record?.let(bidi.forward);
+
+    final resultDsp = DspImpl();
+    final result = resultDsp.fw(
+      parse(
+        await get(id),
+      ),
+    );
+
+    final listening = watchObject(
+      id,
+      fireImmediately: true,
+    ).map(parse).listen(result.set);
+
+    final updates = StreamController<T?>()..closeBy(disposers);
+
+    updates.stream.asyncForEach((value) async {
+      await isar.writeTxn(() async {
+        if (value == null) {
+          await delete(id);
+        } else {
+          await put(
+            bidi.backward(value)..id = id,
+          );
+        }
+      });
+    }).awaitBy(disposers);
+
+    disposers.add(() async {
+      await listening.cancel();
+      await resultDsp.dispose();
+    });
+
+    return Fw.fromFr(
+      fr: result,
+      set: (value) {
+        updates.add(value);
+        result.set(value);
+      },
+    );
+  }
+}
+
+extension CustomIsarCollectionX<R> on IsarCollection<R> {
+  Future<Fw<T?>> customIdRecordFw<T extends Object>({
+    required R Function() createRecord,
+    required int Function(R record) getRecordId,
+    required void Function(R record, T value) setRecordValue,
+    required T Function(R record) getRecordValue,
+    required DspReg disposers,
+  }) async {
+    T? parse(R? record) => record?.let(getRecordValue);
+    final resultDsp = DspImpl();
+    final recordId = getRecordId(createRecord());
+    final result = resultDsp.fw(
+      parse(await get(recordId)),
+    );
+
+    final listening = watchObject(
+      recordId,
+      fireImmediately: true,
+    ).map(parse).listen(result.set);
+
+    final updates = StreamController<T?>()..closeBy(disposers);
+
+    updates.stream.asyncForEach((value) async {
+      await isar.writeTxn(() async {
+        if (value == null) {
+          await delete(recordId);
+        } else {
+          await put(
+            createRecord().also(
+              (r) => setRecordValue(r, value),
+            ),
+          );
+        }
       });
     }).awaitBy(disposers);
 

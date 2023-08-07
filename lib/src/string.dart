@@ -16,4 +16,16 @@ extension MhuStringX on String {
       (Match m) => ' ${m.group(0)!}',
     );
   }
+
+  Iterable<String> slices(int size) sync* {
+    final length = this.length;
+    var start = 0;
+    var end = size;
+    while (start < length) {
+      if (end > length) end = length;
+      yield substring(start, end);
+      start += size;
+      end += size;
+    }
+  }
 }

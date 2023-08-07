@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'frp.dart';
 
@@ -52,5 +53,52 @@ class TaskQueue {
     } else {
       return await submit(task);
     }
+  }
+}
+
+class _KeyedTasks {
+  final void Function() dispose;
+  final tasks = DoubleLinkedQueue<Future<void> Function()>();
+
+  _KeyedTasks(this.dispose);
+
+  void start() async {
+    while (tasks.isNotEmpty) {
+      final task = tasks.removeFirst();
+
+      await task();
+    }
+
+    dispose();
+  }
+}
+
+class KeyedTaskQueue<K> {
+  final _count = fw(0);
+  final _map = <K, _KeyedTasks>{};
+
+  Future<T> submit<T>(K key, Future<T> Function() task) {
+    final entry = _map[key];
+
+    _count.update((v) => v + 1);
+
+    final completer = Completer<T>();
+    Future<void> run() async {
+      try {
+        return await completer.completeWith(task);
+      } finally {
+        _count.update((v) => v - 1);
+      }
+    }
+
+    if (entry == null) {
+      _KeyedTasks(() => _map.remove(key))
+        ..tasks.addLast(run)
+        ..start();
+    } else {
+      entry.tasks.addLast(run);
+    }
+
+    return completer.future;
   }
 }

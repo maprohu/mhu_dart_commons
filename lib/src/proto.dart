@@ -1,7 +1,7 @@
 
-import 'package:mhu_dart_commons/commons.dart';
 import 'package:protobuf/protobuf.dart';
 
+import 'collection/compare.dart';
 import 'freezed.dart';
 import 'frp.dart';
 import 'string.dart';
