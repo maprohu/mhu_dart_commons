@@ -29,3 +29,5 @@ extension MhuStringX on String {
     }
   }
 }
+
+bool isDigit(String s, int idx) => (s.codeUnitAt(idx) ^ 0x30) <= 9;

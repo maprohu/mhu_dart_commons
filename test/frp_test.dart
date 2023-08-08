@@ -22,4 +22,20 @@ void main() {
     expect(resultList, [0]);
     expect(b.read(), 2);
   });
+
+  test(
+    "fr changes first",
+    () async {
+      final frw = fw(0);
+
+      final disposers = DspImpl();
+      final frr = disposers.fr(() => frw());
+
+      final changesList = frr.changes().toList();
+
+      disposers.dispose();
+
+      expect(await changesList, [0]);
+    },
+  );
 }
