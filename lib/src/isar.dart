@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 
 import 'package:isar/isar.dart';
+import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_commons/src/kt.dart';
 import 'package:mhu_dart_commons/src/stream.dart';
 import 'package:protobuf/protobuf.dart';
@@ -96,50 +97,21 @@ extension FrpIsarX on Isar {
       defaultValue: defaultValue,
       disposers: disposers,
     );
+  }
 
-    //
-    // T parse(SingletonRecord? record) =>
-    //     record?.blob.let(bidi.forward) ?? defaultValue;
-    //
-    // final result = fw(
-    //   parse(
-    //     await singletonRecords.get(id),
-    //   ),
-    // );
-    //
-    // final listening = singletonRecords
-    //     .watchObject(
-    //   id,
-    //   fireImmediately: true,
-    // )
-    //     .map(parse)
-    //     .listen(result.set);
-    //
-    // final updates = StreamController<T>()
-    //   ..closeBy(disposers);
-    //
-    // updates.stream.asyncForEach((value) async {
-    //   await writeTxn(() async {
-    //     await singletonRecords.put(
-    //       SingletonRecord()
-    //         ..id = id
-    //         ..blob = bidi.backward(value),
-    //     );
-    //   });
-    // }).awaitBy(disposers);
-    //
-    // disposers.add(() async {
-    //   await listening.cancel();
-    //   await result.dispose();
-    // });
-    //
-    // return mk.Fwi.fromFr(
-    //   fr: result,
-    //   set: (value) {
-    //     updates.add(value);
-    //     result.set(value);
-    //   },
-    // );
+  Future<Fw<T>> singletonFwWriteOnly<T extends Object>({
+    required int id,
+    required BiDi<List<byte>, T> bidi,
+    required T defaultValue,
+    required DspReg disposers,
+  }) async {
+    return singletonRecords.blobRecordFwWriteOnly(
+      id: id,
+      createRecord: SingletonRecord.new,
+      bidi: bidi,
+      defaultValue: defaultValue,
+      disposers: disposers,
+    );
   }
 
   Future<Fw<T>> singletonFwProto<T extends GeneratedMessage>({
@@ -149,6 +121,20 @@ extension FrpIsarX on Isar {
     required DspReg disposers,
   }) =>
       singletonFw(
+        id: id,
+        bidi: BiDi.proto(create),
+        defaultValue: defaultValue ?? create()
+          ..freeze(),
+        disposers: disposers,
+      );
+
+  Future<Fw<T>> singletonFwProtoWriteOnly<T extends GeneratedMessage>({
+    required int id,
+    required T Function() create,
+    T? defaultValue,
+    required DspReg disposers,
+  }) =>
+      singletonFwWriteOnly(
         id: id,
         bidi: BiDi.proto(create),
         defaultValue: defaultValue ?? create()
@@ -221,20 +207,34 @@ extension IsarCollectionWithCreateRecordX<M extends GeneratedMessage>
   }) async {
     final record = createRecord();
     return this.collection.recordFw(
-      id: id,
-      bidi: BiDi(
-        forward: (record) => record.proto$.value,
-        backward: (message) => createRecord()..proto$.value = message,
-      ),
-      defaultValue: record.createProto$()..freeze(),
-      disposers: disposers,
-    );
+          id: id,
+          bidi: BiDi(
+            forward: (record) => record.proto$.value,
+            backward: (message) => createRecord()..proto$.value = message,
+          ),
+          defaultValue: record.createProto$()..freeze(),
+          disposers: disposers,
+        );
   }
+
   Future<Fw<M?>> protoRecordFwNullable({
     required int id,
     required DspReg disposers,
   }) async {
     return this.collection.recordFwNullable(
+      id: id,
+      bidi: BiDi(
+        forward: (record) => record.proto$.value,
+        backward: (message) => createRecord()..proto$.value = message,
+      ),
+      disposers: disposers,
+    );
+  }
+  Future<Fw<M?>> protoRecordFwNullableWriteOnly({
+    required int id,
+    required DspReg disposers,
+  }) async {
+    return this.collection.recordFwNullableWriteOnly(
           id: id,
           bidi: BiDi(
             forward: (record) => record.proto$.value,
@@ -264,6 +264,24 @@ extension BlobRecordIsarCollectionX<R extends BlobRecord> on IsarCollection<R> {
     required DspReg disposers,
   }) async {
     return recordFw(
+      id: id,
+      bidi: BiDi(
+        forward: (record) => bidi.forward(record.blob),
+        backward: (message) => createRecord()..blob = bidi.backward(message),
+      ),
+      defaultValue: defaultValue,
+      disposers: disposers,
+    );
+  }
+
+  Future<Fw<T>> blobRecordFwWriteOnly<T extends Object>({
+    required int id,
+    required R Function() createRecord,
+    required BiDi<List<int>, T> bidi,
+    required T defaultValue,
+    required DspReg disposers,
+  }) async {
+    return recordFwWriteOnly(
       id: id,
       bidi: BiDi(
         forward: (record) => bidi.forward(record.blob),
@@ -320,6 +338,40 @@ extension IsarCollectionX<R extends HasIsarId> on IsarCollection<R> {
     );
   }
 
+  Future<Fw<T>> recordFwWriteOnly<T extends Object>({
+    required int id,
+    required BiDi<R, T> bidi,
+    required T defaultValue,
+    required DspReg disposers,
+  }) async {
+    T parse(R? record) => record?.let(bidi.forward) ?? defaultValue;
+
+    final result = disposers.fw(
+      parse(
+        await get(id),
+      ),
+    );
+
+    final writer = LatestExecutor<T>(
+      disposers: disposers,
+      process: (value) async {
+        await isar.writeTxn(() async {
+          await put(
+            bidi.backward(value)..id = id,
+          );
+        });
+      },
+    );
+
+    return Fw.fromFr(
+      fr: result,
+      set: (value) {
+        writer.submit(value);
+        result.set(value);
+      },
+    );
+  }
+
   Future<Fw<T?>> recordFwNullable<T>({
     required int id,
     required BiDi<R, T> bidi,
@@ -362,6 +414,43 @@ extension IsarCollectionX<R extends HasIsarId> on IsarCollection<R> {
       fr: result,
       set: (value) {
         updates.add(value);
+        result.set(value);
+      },
+    );
+  }
+
+  Future<Fw<T?>> recordFwNullableWriteOnly<T extends Object>({
+    required int id,
+    required BiDi<R, T> bidi,
+    required DspReg disposers,
+  }) async {
+    T? parse(R? record) => record?.let(bidi.forward);
+
+    final result = disposers.fw(
+      parse(
+        await get(id),
+      ),
+    );
+
+    final writer = LatestExecutor<T?>(
+      disposers: disposers,
+      process: (value) async {
+        await isar.writeTxn(() async {
+          if (value == null) {
+            await delete(id);
+          } else {
+            await put(
+              bidi.backward(value)..id = id,
+            );
+          }
+        });
+      },
+    );
+
+    return Fw.fromFr(
+      fr: result,
+      set: (value) {
+        writer.submit(value);
         result.set(value);
       },
     );

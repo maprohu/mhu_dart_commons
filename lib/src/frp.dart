@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:collection/collection.dart';
+import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/src/collection/compare.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -19,6 +20,9 @@ part 'frp_fu.dart';
 part 'frp_factory.dart';
 
 part 'frp_cached.dart';
+
+part 'frp.g.has.dart';
+// part 'frp.g.compose.dart';
 
 typedef Watch<T> = T Function();
 typedef Watch1<T, P1> = T Function(P1 p1);

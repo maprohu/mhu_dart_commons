@@ -59,8 +59,8 @@ extension PbMapKeyX on PbMapKey {
       };
 
   Comparator get comparator => switch (this) {
-    PbIntMapKey() => intCompare as Comparator,
-    PbStringMapKey() => stringCompare as Comparator,
+    PbIntMapKey() => (a, b) => intCompare(a, b),
+    PbStringMapKey() => (a, b) => stringCompare(a, b),
   };
 }
 

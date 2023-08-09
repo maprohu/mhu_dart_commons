@@ -1,10 +1,7 @@
 part of 'frp.dart';
 
 class _UpdateSession {
-  final _FwImpl updating;
   final listeners = <void Function()>[];
-
-  _UpdateSession(this.updating);
 
   T run<T>(T Function() action) {
     try {
@@ -16,26 +13,29 @@ class _UpdateSession {
     }
   }
 }
-class _UpdateGroup {
-  static final global = _UpdateGroup();
 
-  _UpdateSession? current;
+@Has()
+class FwUpdateGroup {
+  static final global = FwUpdateGroup();
 
-  T run<T>(_FwImpl updating, T Function() action) {
+  _UpdateSession? _current;
+
+  T run<T>(T Function() action) {
+    final current = _current;
     if (current != null) {
-      throw 'update already running';
+      return action();
     }
-    final session = _UpdateSession(updating);
-    current = session;
+    final session = _UpdateSession();
+    _current = session;
     try {
       return session.run(action);
     } finally {
-      current = null;
+      _current = null;
     }
   }
 
-  void runOnSessionEnd(void Function() callback) {
-    final session = current;
+  void _runOnSessionEnd(void Function() callback) {
+    final session = _current;
     if (session == null) {
       callback();
     } else {
@@ -43,11 +43,12 @@ class _UpdateGroup {
     }
   }
 }
+
 class _FwImpl<T> implements Fw<T>, Disposable {
   late T _currentValue;
   final _subject = BehaviorSubject<T>();
 
-  final _updateGroup = _UpdateGroup.global;
+  final _updateGroup = FwUpdateGroup.global;
 
   static _Calc? _calling;
 
@@ -92,13 +93,12 @@ class _FwImpl<T> implements Fw<T>, Disposable {
   @override
   void set(T value) {
     _updateGroup.run(
-      this,
-          () => _setInternal(value),
+      () => _setInternal(value),
     );
   }
 
   void _updateSubject() {
-    if (_currentValue != _subject.value) {
+    if (_subject.value != _currentValue) {
       _subject.value = _currentValue;
     }
   }
@@ -110,7 +110,7 @@ class _FwImpl<T> implements Fw<T>, Disposable {
       for (final down in downstreamCopy) {
         down._recalc();
       }
-      _updateGroup.runOnSessionEnd(_updateSubject);
+      _updateGroup._runOnSessionEnd(_updateSubject);
     }
   }
 
@@ -123,6 +123,7 @@ class _FwImpl<T> implements Fw<T>, Disposable {
     await _subject.close();
   }
 }
+
 class _Calc<T> implements Disposable {
   final T Function(DspReg disposers) _calc;
 
@@ -146,11 +147,10 @@ class _Calc<T> implements Disposable {
     _clearUpstream();
     _disposers.dispose();
     _disposers = DspImpl();
-    final result = _FwImpl._withCaller(
+    return _FwImpl._withCaller(
       this,
-          () => _calc(_disposers),
+      () => _calc(_disposers),
     );
-    return result;
   }
 
   void _recalc() {
@@ -163,16 +163,17 @@ class _Calc<T> implements Disposable {
     await _disposers.dispose();
   }
 }
+
 class _Frr<T> extends _FwImpl<T> {
   final _Calc<T> _calc;
 
   _Frr._(this._calc)
       : super._(
-    value: (self) {
-      _calc.frr = self;
-      return _calc.run();
-    },
-  );
+          value: (self) {
+            _calc.frr = self;
+            return _calc.run();
+          },
+        );
 
   @override
   Future<void> dispose() async {

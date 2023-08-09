@@ -70,24 +70,25 @@ extension IterableFuturesX<T> on Iterable<Future<T>> {
   Future<List<T>> futureWait() => Future.wait(this);
 }
 
-class LatestExecutor<T extends Object> {
+class LatestExecutor<T> {
   final DspReg _disposers;
   final Future<void> Function(T value) process;
   Completer? _working;
-  T? _next;
+  late T _next;
+  bool _hasNext = false;
 
   void _process() async {
     final working = Completer();
     _working = working;
     while (true) {
-      final current = _next;
-      _next = null;
-
-      if (current == null) {
-        working.complete();
+      if (!_hasNext) {
         _working = null;
+        working.complete();
         return;
       }
+
+      _hasNext = false;
+      final current = _next;
 
       await process(current);
     }
@@ -99,12 +100,11 @@ class LatestExecutor<T extends Object> {
       return;
     }
 
+    _next = value;
+    _hasNext = true;
+
     if (_working == null) {
-      _working = Completer();
-      _next = value;
       _process();
-    } else {
-      _next = value;
     }
   }
 

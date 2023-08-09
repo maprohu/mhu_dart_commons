@@ -9,3 +9,4 @@ pubspec.lock
 generated/
 *.freezed.dart
 *.g.dart
+*.g.*.dart
