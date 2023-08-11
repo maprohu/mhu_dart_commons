@@ -216,3 +216,7 @@ extension HasNextX<T extends HasNext<T>> on T {
     }
   }
 }
+
+extension AnyIterableX<T, I extends Iterable<T>> on I {
+  I orIfEmpty(I then) => isNotEmpty ? this : then;
+}
