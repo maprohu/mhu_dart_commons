@@ -32,6 +32,21 @@ Fu<F> fuCold<M extends GeneratedMessage, F>(
   );
 }
 
+Fu<F> fuColdNullable<M extends GeneratedMessage, F>({
+  required Fw<M?> fv,
+  required M defaultMessage,
+  required F Function(M m) get,
+}) {
+  return Fu.fromFr(
+    fr: fv.map((t) => get(t ?? defaultMessage)),
+    update: (updates) {
+      final currentMessage = fv.read() ?? defaultMessage;
+      fv.value = currentMessage.rebuild((message) {
+        updates(get(message));
+      });
+    },
+  );
+}
 
 extension FwProtoX<M extends GeneratedMessage> on Fw<M> {
   void rebuild(void Function(M message) updates) {
