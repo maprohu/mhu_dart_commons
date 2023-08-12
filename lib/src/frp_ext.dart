@@ -85,6 +85,25 @@ extension FuCommonMapX<K, V> on Fu<Map<K, V>> {
     );
   }
 
+  Fw<V?> itemFwNullable(
+    K key,
+  ) {
+    return frw(
+      map((t) {
+        return t[key];
+      }),
+      (value) {
+        update((m) {
+          if (value == null) {
+            m.remove(key);
+          } else {
+            m[key] = value;
+          }
+        });
+      },
+    );
+  }
+
   Fw<V> itemFwHot(
     K key, {
     V? defaultValue,
