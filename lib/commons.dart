@@ -35,3 +35,4 @@ export 'src/late.dart';
 export 'src/hash.dart';
 export 'src/attribute.dart';
 export 'src/validate.dart';
+export 'src/editing.dart';
