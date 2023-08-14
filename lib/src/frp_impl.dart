@@ -44,6 +44,12 @@ class FwUpdateGroup {
   }
 }
 
+extension HasFwUpdateGroupX on HasFwUpdateGroup {
+  T txn<T>(T Function() action) {
+    return fwUpdateGroup.run(action);
+  }
+}
+
 class _FwImpl<T> implements Fw<T>, Disposable {
   late T _currentValue;
   final _subject = BehaviorSubject<T>();
