@@ -1,5 +1,6 @@
 T identity<T>(T value) => value;
 
+void ignore0() {}
 void ignore1(dynamic p0) {}
 Never throws0() => throw UnimplementedError();
 Never throws1(dynamic p0) => throw UnimplementedError();
@@ -8,6 +9,8 @@ Iterable<T> empty0<T>() => Iterable.empty();
 Iterable<T> empty1<T>(dynamic p0) => Iterable.empty();
 
 bool constantFalse() => false;
+
+
 
 extension CallbackX<T> on void Function(T) {
   void Function(T) skip(int count) {

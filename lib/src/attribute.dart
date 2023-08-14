@@ -5,10 +5,14 @@ part 'attribute.g.has.dart';
 part 'attribute.g.compose.dart';
 
 @Has()
+@Compose()
 typedef ReadAttribute<O, A> = A Function(O object);
+
 @Has()
 typedef WriteAttribute<O, A> = void Function(O object, A attribute);
+
 @Has()
+@Compose()
 typedef EnsureAttribute<O, A> = A Function(O object);
 
 @Has()
@@ -19,6 +23,10 @@ typedef ExistsAttribute<O> = bool Function(O object);
 
 @Compose()
 abstract class ReadOnlyAttribute<O, A> implements HasReadAttribute<O, A> {}
+
+@Compose()
+abstract class MutableAttribute<O, A>
+    implements ReadEnsureAttribute<O, A>, HasExistsAttribute<O> {}
 
 @Compose()
 abstract class ReadEnsureAttribute<O, A>
@@ -37,7 +45,10 @@ abstract class ScalarAttribute<O, A>
 
 @Compose()
 abstract class MessageAttribute<O, A>
-    implements ScalarAttribute<O, A>, ReadEnsureAttribute<O, A> {}
+    implements
+        ScalarAttribute<O, A>,
+        ReadEnsureAttribute<O, A>,
+        MutableAttribute<O, A> {}
 
 extension HasReadAttributeX<O, A> on HasReadAttribute<O, A> {
   ReadOnlyAttribute<O, B> thenRead<B>(

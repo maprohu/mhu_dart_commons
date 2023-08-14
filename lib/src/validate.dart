@@ -21,6 +21,10 @@ abstract class ValidationSuccess<T>
 abstract class ValidationFailure<T>
     implements ValidationResult<T>, HasValidationFailureMessages {}
 
+extension ValidationSucccessX<T> on ValidationSuccess<T> {
+  T get value => validationSuccessValue;
+}
+
 @freezed
 class ValidationSuccessImpl<T>
     with _$ValidationSuccessImpl<T>
@@ -40,3 +44,18 @@ class ValidationFailureImpl<T>
 }
 
 typedef ValidatingFunction<I, O> = ValidationResult<O> Function(I input);
+
+ValidationResult<T> identityValidatingFunction<T>(T input) =>
+    ValidationSuccessImpl(input);
+
+ValidationResult<int> parseIntValidatingFunction(String string) {
+  try {
+    return ValidationSuccessImpl(
+      int.parse(string),
+    );
+  } catch (e) {
+    return ValidationFailureImpl(
+      [e.toString()],
+    );
+  }
+}

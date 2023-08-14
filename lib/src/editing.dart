@@ -39,20 +39,42 @@ abstract class ReadWatchValue<T> implements HasReadValue<T>, HasWatchValue<T> {}
 abstract class ReadWriteValue<T> implements HasReadValue<T>, HasWriteValue<T> {}
 
 @Compose()
+abstract class MutableValue<T>
+    implements ReadWatchValue<T?>, HasUpdateValue<T> {}
+
+@Compose()
 abstract class ScalarValue<T>
     implements ReadWatchValue<T?>, HasWriteValue<T?>, ReadWriteValue<T?> {}
 
 @Compose()
 abstract class MapValue<K, V>
-    implements ReadWatchValue<Map<K, V>?>, HasUpdateValue<Map<K, V>> {}
+    implements
+        ReadWatchValue<Map<K, V>?>,
+        HasUpdateValue<Map<K, V>>,
+        MutableValue<Map<K, V>> {}
 
 @Compose()
 abstract class ListValue<E>
-    implements ReadWatchValue<List<E>?>, HasUpdateValue<List<E>> {}
+    implements
+        ReadWatchValue<List<E>?>,
+        HasUpdateValue<List<E>>,
+        MutableValue<List<E>> {}
 
 extension HasReadValueX<T> on HasReadValue<T?> {
   ReadValue<V?> readAttribute<V>(
     HasReadAttribute<T, V> hasReadAttribute,
+  ) {
+    return () {
+      final value = readValue();
+      if (value == null) {
+        return null;
+      }
+      return hasReadAttribute.readAttribute(value);
+    };
+  }
+
+  ReadValue<V?> readAttributeNullable<V>(
+    HasReadAttribute<T, V?> hasReadAttribute,
   ) {
     return () {
       final value = readValue();
@@ -67,6 +89,18 @@ extension HasReadValueX<T> on HasReadValue<T?> {
 extension HasWatchValueX<T> on HasWatchValue<T?> {
   WatchValue<V?> watchAttribute<V>(
     HasReadAttribute<T, V> hasReadAttribute,
+  ) {
+    return () {
+      final value = watchValue();
+      if (value == null) {
+        return null;
+      }
+      return hasReadAttribute.readAttribute(value);
+    };
+  }
+
+  WatchValue<V?> watchAttributeNullable<V>(
+    HasReadAttribute<T, V?> hasReadAttribute,
   ) {
     return () {
       final value = watchValue();
@@ -106,6 +140,19 @@ extension ReadWriteValueX<T> on ReadWriteValue<T?> {
       scalarAttribute,
     );
   }
+
+  HasUpdateValue<V> updateAttribute<V>({
+    required MessageUpdateBits<T> messageUpdateBits,
+    required HasEnsureAttribute<T, V> hasEnsureAttribute,
+  }) {
+    return ComposedUpdateValue(
+      updateValue: updateMessage(
+        messageUpdateBits,
+      ),
+    ).updateAttribute(
+      hasEnsureAttribute,
+    );
+  }
 }
 
 extension HasUpdateValueX<T> on HasUpdateValue<T> {
@@ -124,6 +171,48 @@ extension HasUpdateValueX<T> on HasUpdateValue<T> {
       );
     };
   }
+
+  HasUpdateValue<V> updateAttribute<V>(
+    HasEnsureAttribute<T, V> hasEnsureAttribute,
+  ) {
+    return ComposedUpdateValue(
+      updateValue: (updates) {
+        updateValue(
+          (value) {
+            updates(
+              hasEnsureAttribute.ensureAttribute(
+                value,
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+extension MutableValueX<T> on MutableValue<T> {
+  MutableValue<V> mutableAttribute<V>(
+    MutableAttribute<T, V> mutableAttribute,
+  ) {
+    return ComposedMutableValue.readWatchValue(
+      readWatchValue: readWatchAttribute(mutableAttribute),
+      updateValue: updateAttribute(mutableAttribute).updateValue,
+    );
+  }
+
+  ScalarValue<V> scalarAttribute<V>(
+    ScalarAttribute<T, V> scalarAttribute,
+  ) {
+    return ComposedScalarValue.readWatchValue(
+      readWatchValue: readWatchAttribute(
+        scalarAttribute,
+      ),
+      writeValue: writeAttribute(
+        scalarAttribute,
+      ),
+    );
+  }
 }
 
 extension ReadWatchValueX<T> on ReadWatchValue<T?> {
@@ -133,6 +222,15 @@ extension ReadWatchValueX<T> on ReadWatchValue<T?> {
     return ComposedReadWatchValue(
       readValue: readAttribute(hasReadAttribute),
       watchValue: watchAttribute(hasReadAttribute),
+    );
+  }
+
+  ReadWatchValue<V?> readWatchAttributeNullable<V>(
+    HasReadAttribute<T, V?> hasReadAttribute,
+  ) {
+    return ComposedReadWatchValue(
+      readValue: readAttributeNullable(hasReadAttribute),
+      watchValue: watchAttributeNullable(hasReadAttribute),
     );
   }
 }
@@ -152,6 +250,53 @@ extension ScalarValueX<T> on ScalarValue<T> {
       ),
     );
   }
+
+  MapValue<K, V> mapAttribute<K, V>({
+    required MessageUpdateBits<T> messageUpdateBits,
+    required HasReadAttribute<T, Map<K, V>> hasReadAttribute,
+  }) {
+    return ComposedMapValue.readWatchValue(
+      readWatchValue: readWatchAttribute(
+        hasReadAttribute,
+      ),
+      updateValue: updateAttribute(
+        messageUpdateBits: messageUpdateBits,
+        hasEnsureAttribute: ComposedEnsureAttribute(
+          ensureAttribute: hasReadAttribute.readAttribute,
+        ),
+      ).updateValue,
+    );
+    // updateValue: update
+  }
+}
+
+extension MapValueX<K, V> on MapValue<K, V> {
+  static HasReadAttribute<Map<K, V>, V?> readMapItemAttribute<K, V>(K key) {
+    return ComposedReadAttribute(
+      readAttribute: (map) {
+        return map[key];
+      },
+    );
+  }
+
+  ScalarValue<V> itemValue(K key) {
+    return ComposedScalarValue.readWatchValue(
+      readWatchValue: readWatchAttributeNullable(
+        readMapItemAttribute<K, V>(key),
+      ),
+      writeValue: (value) {
+        updateValue(
+          (map) {
+            if (value == null) {
+              map.remove(key);
+            } else {
+              map[key] = value;
+            }
+          },
+        );
+      },
+    );
+  }
 }
 
 extension EditingFwX<T> on Fw<T> {
@@ -166,6 +311,16 @@ extension EditingFwX<T> on Fw<T> {
 
         set(value);
       },
+    );
+  }
+}
+
+extension EditingFuX<T> on Fu<T> {
+  MutableValue<T> get toMutableValue {
+    return ComposedMutableValue(
+      readValue: read,
+      watchValue: watch,
+      updateValue: update,
     );
   }
 }
