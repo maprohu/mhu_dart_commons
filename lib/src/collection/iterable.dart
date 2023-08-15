@@ -87,15 +87,17 @@ extension MhuIterableX<T> on Iterable<T> {
   }
 
   Iterable<T> separatedBy(T separator) sync* {
-    if (isEmpty) {
+    final it = iterator;
+
+    if (!it.moveNext()) {
       return;
     }
 
-    yield first;
+    yield it.current;
 
-    for (final item in tail) {
+    while (it.moveNext()) {
       yield separator;
-      yield item;
+      yield it.current;
     }
   }
 
@@ -220,3 +222,4 @@ extension HasNextX<T extends HasNext<T>> on T {
 extension AnyIterableX<T, I extends Iterable<T>> on I {
   I orIfEmpty(I then) => isNotEmpty ? this : then;
 }
+

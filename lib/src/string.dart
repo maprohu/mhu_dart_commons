@@ -28,6 +28,8 @@ extension MhuStringX on String {
       end += size;
     }
   }
+
+  String orIfBlank(String Function() then) => trim().isEmpty ? then() : this;
 }
 
 bool isDigit(String s, int idx) => (s.codeUnitAt(idx) ^ 0x30) <= 9;
