@@ -1,6 +1,7 @@
 T identity<T>(T value) => value;
 
 void ignore0() {}
+void noop() {}
 void ignore1(dynamic p0) {}
 Never throws0() => throw UnimplementedError();
 Never throws1(dynamic p0) => throw UnimplementedError();
