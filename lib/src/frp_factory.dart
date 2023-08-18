@@ -56,7 +56,7 @@ Fr<T> frDsp<T>(
       _Calc(calc),
     )..disposeBy(dsp);
 
-class _MappedFr<A, B> implements Fr<B> {
+class _MappedFr<A, B> extends Fr<B> {
   final Fr<A> _frA;
   final B Function(A a) _mapper;
 

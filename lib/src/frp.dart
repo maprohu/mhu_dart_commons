@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
+import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_commons/src/collection/compare.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -27,7 +28,7 @@ part 'frp.g.has.dart';
 typedef Watch<T> = T Function();
 typedef Watch1<T, P1> = T Function(P1 p1);
 
-abstract interface class Fr<T> {
+abstract interface class Fr<T>  {
   T watch();
 
   T read();
@@ -37,6 +38,7 @@ abstract interface class Fr<T> {
   /// maybe rename it to "distinctValues()" ?
   Stream<T> changes();
 }
+
 
 abstract interface class Fw<T> extends Fr<T> {
   void set(T value);

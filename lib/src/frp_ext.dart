@@ -27,6 +27,13 @@ extension FrX<T> on Fr<T> {
   }
 
   Fr<V> map<V>(V Function(T t) mapper) => _MappedFr(this, mapper);
+
+  ReadWatchValue<T> get toReadWatchValue {
+    return ComposedReadWatchValue(
+      readValue: read,
+      watchValue: watch,
+    );
+  }
 }
 
 extension FwX<T> on Fw<T> {
