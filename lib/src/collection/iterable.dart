@@ -1,6 +1,8 @@
 import 'package:collection/collection.dart' as coll;
 import 'package:mhu_dart_commons/commons.dart';
 
+part 'iterable.freezed.dart';
+
 extension MhuIterableX<T> on Iterable<T> {
   bool get allEqualOrEmpty {
     final it = iterator;
@@ -56,14 +58,8 @@ extension MhuIterableX<T> on Iterable<T> {
     return result;
   }
 
-  Iterable<(T, V)> zipWith<V>(Iterable<V> other) sync* {
-    final it1 = iterator;
-    final it2 = other.iterator;
-
-    while (it1.moveNext() && it2.moveNext()) {
-      yield (it1.current, it2.current);
-    }
-  }
+  Iterable<(T, V)> zipWith<V>(Iterable<V> other) =>
+      zip2IterablesRecords(this, other);
 
   void zipForEachWith<V>(Iterable<V> other, void Function(T, V) fn) {
     final it1 = iterator;
@@ -121,6 +117,18 @@ extension MhuIterableX<T> on Iterable<T> {
       negative: negative,
     );
   }
+
+  Iterable<V> takeWhileNotNull<V extends Object>(
+    V? Function(T e) mapper,
+  ) sync* {
+    for (final item in this) {
+      final mapped = mapper(item);
+      if (mapped == null) {
+        return;
+      }
+      yield mapped;
+    }
+  }
 }
 
 bool _eq(dynamic a, dynamic b) => a == b;
@@ -163,6 +171,12 @@ extension MhuIterableNumberExtension on Iterable<num> {
 extension MhuIterableAnyX<T> on T {
   Iterable<T> get toSingleElementIterable sync* {
     yield this;
+  }
+
+  Iterable<T> get toRepeatInfinitelyIterable sync* {
+    while (true) {
+      yield this;
+    }
   }
 
   Iterable<T> infiniteIterable(T Function(T item) next) sync* {
@@ -223,3 +237,63 @@ extension AnyIterableX<T, I extends Iterable<T>> on I {
   I orIfEmpty(I then) => isNotEmpty ? this : then;
 }
 
+Iterable<(A, B)> zip2IterablesRecords<A, B>(
+  Iterable<A> iterableA,
+  Iterable<B> iterableB,
+) sync* {
+  final it1 = iterableA.iterator;
+  final it2 = iterableB.iterator;
+
+  while (it1.moveNext() && it2.moveNext()) {
+    yield (it1.current, it2.current);
+  }
+}
+
+Iterable<Zip2<L, R>> zip2Iterables<L, R>(
+  Iterable<L> leftIterable,
+  Iterable<R> rightIterable,
+) sync* {
+  final leftIterator = leftIterable.iterator;
+  final rightIterator = rightIterable.iterator;
+
+  late bool hasLeft;
+  late bool hasRight;
+
+  bool moveNext() {
+    hasLeft = leftIterator.moveNext();
+    hasRight = rightIterator.moveNext();
+
+    return hasLeft || hasRight;
+  }
+
+  while (moveNext()) {
+    if (hasRight && hasLeft) {
+      yield Zip2Both(leftIterator.current, rightIterator.current);
+    } else if (hasLeft) {
+      yield Zip2Left(leftIterator.current);
+    } else if (hasRight) {
+      yield Zip2Right(rightIterator.current);
+    }
+  }
+}
+
+@freezed
+sealed class Zip2<L, R> with _$Zip2<L, R> {
+  const factory Zip2.left(L left) = Zip2Left;
+
+  const factory Zip2.right(R right) = Zip2Right;
+
+  const factory Zip2.both(L left, R right) = Zip2Both;
+}
+
+extension Zip2X<L, R> on Zip2<L, R> {
+  L? get leftOrNull => switch (this) {
+        Zip2Left(:final left) || Zip2Both(:final left) => left,
+        _ => null,
+      };
+
+  R? get rightOrNull => switch (this) {
+        Zip2Right(:final right) || Zip2Both(:final right) => right,
+        _ => null,
+      };
+}

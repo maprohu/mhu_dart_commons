@@ -1,13 +1,14 @@
 import 'dart:async';
 
 import 'package:collection/collection.dart';
+import 'package:fixnum/fixnum.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
-import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_commons/src/collection/compare.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'bidi.dart';
 import 'cache.dart';
+import 'editing.dart';
 import 'functions.dart';
 import 'dispose.dart';
 import 'frp.dart' as frp;
@@ -21,6 +22,8 @@ part 'frp_fu.dart';
 part 'frp_factory.dart';
 
 part 'frp_cached.dart';
+
+part 'frp_seq.dart';
 
 part 'frp.g.has.dart';
 // part 'frp.g.compose.dart';

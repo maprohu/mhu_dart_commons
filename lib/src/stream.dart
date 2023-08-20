@@ -9,6 +9,11 @@ import 'functions.dart';
 
 part 'stream.freezed.dart';
 
+typedef BeforeAfter<T> = ({
+  T before,
+  T after,
+});
+
 extension MhuStreamX<T> on Stream<T> {
   Future<void> asyncForEach(FutureOr<void> Function(T value) action) async {
     await for (final value in this) {
@@ -25,6 +30,22 @@ extension MhuStreamX<T> on Stream<T> {
         return value;
       },
     ).listen(ignore1);
+  }
+
+  Stream<BeforeAfter<T>> beforeAfter({
+    required T first,
+  }) {
+    return Rx.concat([
+      Stream.value(first),
+      this,
+    ]).bufferCount(2).map((window) {
+      final [before, after] = window;
+
+      return (
+        before: before,
+        after: after,
+      );
+    });
   }
 }
 

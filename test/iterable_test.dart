@@ -26,4 +26,13 @@ void main() {
     );
     print(sw.elapsed);
   });
+
+  test("zip2", () {
+    final lefts = [0, 1];
+    final rights = ["a", "b", "c"];
+
+    final zipped = zip2Iterables(lefts, rights).toList();
+
+    expect(zipped.length, 3);
+  });
 }
