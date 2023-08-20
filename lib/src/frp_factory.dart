@@ -46,6 +46,12 @@ class _Frw<T> implements Fw<T> {
 
   @override
   T watch() => _fr.watch();
+
+  @override
+  void pause() => _fr.pause();
+
+  @override
+  void resume() => _fr.resume();
 }
 
 Fr<T> frDsp<T>(
@@ -70,4 +76,10 @@ class _MappedFr<A, B> extends Fr<B> {
 
   @override
   B watch() => _mapper(_frA.watch());
+
+  @override
+  void pause() => _frA.pause();
+
+  @override
+  void resume() => _frA.resume();
 }

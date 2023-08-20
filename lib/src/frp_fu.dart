@@ -3,11 +3,11 @@ part of 'frp.dart';
 abstract interface class Fu<T> extends Fr<T> {
   void update(void Function(T item) updates);
 
-
   static Fu<T> fromFr<T>({
     required Fr<T> fr,
     required void Function(void Function(T item) updates) update,
-  }) => _Fu(fr: fr, update: update);
+  }) =>
+      _Fu(fr: fr, update: update);
 }
 
 class _Fu<T> implements Fu<T> {
@@ -31,7 +31,14 @@ class _Fu<T> implements Fu<T> {
 
   @override
   void update(void Function(T value) updates) => _update(updates);
+
+  @override
+  void pause() => _fr.pause();
+
+  @override
+  void resume() => _fr.resume();
 }
+
 mixin HasFu<T> implements Fu<T> {
   Fu<T> get fv;
 
@@ -64,7 +71,7 @@ class CachedFu<T, K, C, F extends Fw<T>> with HasFu<C> {
 
   late final _getCache = Cache<K, Fr<T?>>((key) {
     return fr(
-          () => _get(fv(), key),
+      () => _get(fv(), key),
       disposers: _disposers,
     );
   });
@@ -74,7 +81,7 @@ class CachedFu<T, K, C, F extends Fw<T>> with HasFu<C> {
   late final _existsCache = Cache<K, Fr<bool>>((key) {
     final getFr = get(key);
     return fr(
-          () => getFr() != null,
+      () => getFr() != null,
       disposers: _disposers,
     );
   });
@@ -82,12 +89,12 @@ class CachedFu<T, K, C, F extends Fw<T>> with HasFu<C> {
   Fr<bool> exists(K key) => _existsCache.get(key);
 
   late final keys = fr(
-        () => _keys(fv()),
+    () => _keys(fv()),
     disposers: _disposers,
   );
 
   late final sortedKeys = fr(
-        () => _sortedKeys(fv()),
+    () => _sortedKeys(fv()),
     disposers: _disposers,
   );
 
@@ -109,7 +116,7 @@ class CachedFu<T, K, C, F extends Fw<T>> with HasFu<C> {
       fv: fv,
       item: cache.get,
       get: (collection, key) =>
-      key < collection.length ? collection[key] : null,
+          key < collection.length ? collection[key] : null,
       keys: (collecion) => collecion.mapIndexed((index, element) => index),
       sortedKeys: (collecion) =>
           collecion.mapIndexed((index, element) => index),
@@ -140,6 +147,12 @@ class CachedFu<T, K, C, F extends Fw<T>> with HasFu<C> {
       disposers: disposers,
     );
   }
+
+  @override
+  void pause() => fv.pause();
+
+  @override
+  void resume() => fv.resume();
 
   CachedFu({
     required this.fv,

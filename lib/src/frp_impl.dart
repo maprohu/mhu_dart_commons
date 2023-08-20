@@ -50,9 +50,62 @@ extension HasFwUpdateGroupX on HasFwUpdateGroup {
   }
 }
 
+sealed class _PauseResumeState {
+  const _PauseResumeState();
+  void pause(_FwImpl impl);
+  void resume(_FwImpl impl);
+  void recalc(_Calc calc);
+
+  static const _PauseResumeState running = _Running.instance;
+
+  factory _PauseResumeState.paused() = _Paused;
+}
+class _Paused extends _PauseResumeState {
+  _Calc? calc;
+  @override
+  void pause(_FwImpl impl) {
+    throw impl;
+  }
+  @override
+  void recalc(_Calc calc) {
+    this.calc = calc;
+  }
+
+  @override
+  void resume(_FwImpl impl) {
+    final calc = this.calc;
+    if (calc != null) {
+      calc._recalcInternal();
+    }
+    impl._pauseResumeState = _PauseResumeState.running;
+  }
+
+}
+class _Running extends _PauseResumeState {
+  const _Running._();
+  static const instance = _Running._();
+
+  @override
+  void resume(_FwImpl impl) {
+    throw impl;
+  }
+
+  @override
+  void pause(_FwImpl impl) {
+    impl._pauseResumeState = _PauseResumeState.paused();
+  }
+
+  @override
+  void recalc(_Calc calc) {
+    calc._recalcInternal();
+  }
+}
+
 class _FwImpl<T> implements Fw<T>, Disposable {
   late T _currentValue;
   final _subject = BehaviorSubject<T>();
+
+  _PauseResumeState _pauseResumeState = _PauseResumeState.running;
 
   final _updateGroup = FwUpdateGroup.global;
 
@@ -128,6 +181,16 @@ class _FwImpl<T> implements Fw<T>, Disposable {
     _downstream.clear();
     await _subject.close();
   }
+
+  @override
+  void pause() {
+    _pauseResumeState.pause(this);
+  }
+
+  @override
+  void resume() {
+    _pauseResumeState.resume(this);
+  }
 }
 
 class _Calc<T> implements Disposable {
@@ -160,6 +223,10 @@ class _Calc<T> implements Disposable {
   }
 
   void _recalc() {
+    frr._pauseResumeState.recalc(this);
+  }
+
+  void _recalcInternal() {
     frr._setInternal(run());
   }
 

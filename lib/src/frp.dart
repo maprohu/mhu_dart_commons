@@ -31,7 +31,7 @@ part 'frp.g.has.dart';
 typedef Watch<T> = T Function();
 typedef Watch1<T, P1> = T Function(P1 p1);
 
-abstract interface class Fr<T>  {
+abstract interface class Fr<T> {
   T watch();
 
   T read();
@@ -40,8 +40,11 @@ abstract interface class Fr<T>  {
   /// includes the initial, not yet changed value.
   /// maybe rename it to "distinctValues()" ?
   Stream<T> changes();
-}
 
+  void pause();
+
+  void resume();
+}
 
 abstract interface class Fw<T> extends Fr<T> {
   void set(T value);
@@ -64,6 +67,12 @@ mixin HasFr<T> implements Fr<T> {
 
   @override
   Stream<T> changes() => fv$.changes();
+
+  @override
+  void pause() => fv$.pause();
+
+  @override
+  void resume() => fv$.resume();
 }
 
 mixin HasFw<T> implements Fw<T> {
@@ -80,4 +89,10 @@ mixin HasFw<T> implements Fw<T> {
 
   @override
   void set(T v) => fv$.set(v);
+
+  @override
+  void pause() => fv$.pause();
+
+  @override
+  void resume() => fv$.resume();
 }
