@@ -8,6 +8,14 @@ Fw<T> fw<T>(
       value: (_) => value,
     )..disposeBy(disposers);
 
+Fr<T> frHot<T>(
+  T Function() calc, {
+  required DspReg disposers,
+}) =>
+    _Frr._(
+      _Calc((_) => calc()),
+    )..disposeBy(disposers);
+
 Fr<T> fr<T>(
   T Function() calc, {
   DspReg? disposers,

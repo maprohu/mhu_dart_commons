@@ -19,3 +19,7 @@ class Late<T> {
 }
 
 Late<T> lazy<T>(T Function() factory) => Late(factory);
+
+class LateFinal<T> {
+  late final T value;
+}

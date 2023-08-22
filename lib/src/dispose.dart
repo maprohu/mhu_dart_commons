@@ -1,8 +1,15 @@
 import 'dart:async';
 
 import 'package:logger/logger.dart';
+import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
+
+part 'dispose.g.has.dart';
+// part 'dispose.g.compose.dart';
 
 final _logger = Logger();
+
+@Has()
+typedef Disposers = DspReg;
 
 typedef DisposeAction = FutureOr<void> Function();
 

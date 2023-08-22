@@ -6,6 +6,15 @@ part 'editing.g.has.dart';
 part 'editing.g.compose.dart';
 
 @Has()
+typedef DefaultValue<T> = T;
+
+@Has()
+typedef DefaultValueOpt<T> = T?;
+
+@Has()
+typedef CreateValue<T> = T Function();
+
+@Has()
 typedef ReadValue<T> = T Function();
 
 @Has()

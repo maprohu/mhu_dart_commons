@@ -15,6 +15,18 @@ class CachedFr<T, K, C, F extends Fr<T>> with HasFr<C> {
     T? defaultValue,
     DspReg? disposers,
   }) {
+    if (disposers == null) {
+      return CachedFr(
+        fv,
+        (index) {
+          final item = fv.itemFrCold(
+            index,
+            defaultValue: defaultValue,
+          );
+          return wrap(item);
+        },
+      );
+    }
     final cache = Cache<int, F>((index) {
       final item = fv.itemFrHot(
         index,
@@ -32,6 +44,18 @@ class CachedFr<T, K, C, F extends Fr<T>> with HasFr<C> {
     T? defaultValue,
     DspReg? disposers,
   }) {
+    if (disposers == null) {
+      return CachedFr(
+        fv,
+        (index) {
+          final item = fv.itemFrCold(
+            index,
+            defaultValue: defaultValue,
+          );
+          return wrap(item);
+        },
+      );
+    }
     final cache = Cache<K, F>((index) {
       final item = fv.itemFrHot(
         index,
