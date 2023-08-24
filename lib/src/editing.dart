@@ -3,7 +3,7 @@ import 'package:mhu_dart_commons/commons.dart';
 
 part 'editing.g.has.dart';
 
-part 'editing.g.compose.dart';
+part 'editing.g.dart';
 
 @Has()
 typedef DefaultValue<T> = T;

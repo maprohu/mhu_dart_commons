@@ -11,3 +11,10 @@ mixin HolderMixin<T> {
   @override
   int get hashCode => value.hashCode;
 }
+
+class Holder<T> with HolderMixin<T> {
+  @override
+  final T value;
+
+  Holder(this.value);
+}

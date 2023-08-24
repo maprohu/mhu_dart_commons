@@ -47,7 +47,7 @@ class FileStoreIO implements FileStore {
     try {
       await sourceFile.rename(file.path);
     } on FileSystemException catch (e) {
-      _logger.d(e.message, e);
+      _logger.d(e.message, error: e);
       await sourceFile.copy(file.path);
     }
   }

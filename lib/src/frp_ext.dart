@@ -183,7 +183,7 @@ extension FuCommonListX<V> on Fu<List<V>> {
 }
 
 extension FrCommonListX<V> on Fr<List<V>> {
-  static V Function(List<V> list) _item(
+  static V Function(List<V> list) _item<V>(
     int index, {
     V? defaultValue,
   }) {
@@ -297,4 +297,13 @@ extension FrpStreamX<T> on Stream<T> {
 
     return frw;
   }
+}
+
+VoidContextExecutor createFrPausedExecutor({
+  @ext required Fr fv,
+}) {
+  return createVoidContextExecutor(
+    start: fv.pause,
+    end: fv.resume,
+  );
 }

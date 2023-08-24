@@ -8,7 +8,6 @@ part 'singleton.g.dart';
 
 part 'singleton.g.has.dart';
 
-part 'singleton.g.compose.dart';
 
 @Has()
 typedef SingletonsByKey<K, V> = IMap<K, V>;

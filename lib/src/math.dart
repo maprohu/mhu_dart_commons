@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 
 int nextPowerOf2(int value) {
   assert(value >= 0);
@@ -39,8 +40,29 @@ extension MathIterableX<T> on Iterable<T> {
 bool doubleEqualWithin3Decimals(double a, double b) =>
     doubleRoughlyEqual(a, b, 0.001);
 
-bool doubleRoughlyEqual(double a, double b, double epsilon) =>
+bool assertDoubleRoughlyEqual(double a, double b) {
+  assert(doubleRoughlyEqual(a, b, 0.001));
+  return true;
+}
+
+bool doubleRoughlyEqual(double a, double b, [double epsilon = 0.001]) =>
     (a - b).abs() < epsilon;
 
 bool Function(double a, double b) createDoubleRoughlyEqual(double epsilon) =>
     (a, b) => doubleRoughlyEqual(a, b, epsilon);
+
+bool assertDoublesRoughlyEqual(
+  Iterable<double> doubles, [
+  double epsilon = 0.001,
+]) {
+  final first = doubles.first;
+
+  final notEqual =
+      doubles.firstWhereOrNull((e) => !doubleRoughlyEqual(first, e, epsilon));
+
+  if (notEqual != null) {
+    throw "$first != $notEqual: $doubles";
+  }
+
+  return true;
+}

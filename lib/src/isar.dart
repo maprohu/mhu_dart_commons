@@ -28,7 +28,6 @@ part 'isar.freezed.dart';
 
 part 'isar.g.has.dart';
 
-part 'isar.g.compose.dart';
 
 extension IsarDisposeX on Isar {
   Future<bool> dispose() => close(deleteFromDisk: false);
