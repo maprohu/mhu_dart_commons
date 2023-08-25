@@ -62,12 +62,11 @@ extension MhuIterableX<T> on Iterable<T> {
       zip2IterablesRecords(this, other);
 
   void zipForEachWith<V>(Iterable<V> other, void Function(T, V) fn) {
-    final it1 = iterator;
-    final it2 = other.iterator;
-
-    while (it1.moveNext() && it2.moveNext()) {
-      fn(it1.current, it2.current);
-    }
+    iterableZip2ForEach(
+      left: this,
+      right: other,
+      action: fn,
+    );
   }
 
   Iterable<E> zipMapWith<V, E>(
@@ -296,4 +295,17 @@ extension Zip2X<L, R> on Zip2<L, R> {
         Zip2Right(:final right) || Zip2Both(:final right) => right,
         _ => null,
       };
+}
+
+void iterableZip2ForEach<E1, E2>({
+  required Iterable<E1> left,
+  required Iterable<E2> right,
+  required void Function(E1 left, E2 right) action,
+}) {
+  final it1 = left.iterator;
+  final it2 = right.iterator;
+
+  while (it1.moveNext() && it2.moveNext()) {
+    action(it1.current, it2.current);
+  }
 }
