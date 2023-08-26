@@ -28,7 +28,6 @@ part 'isar.freezed.dart';
 
 part 'isar.g.has.dart';
 
-
 extension IsarDisposeX on Isar {
   Future<bool> dispose() => close(deleteFromDisk: false);
 
@@ -55,10 +54,9 @@ mixin IsarIdRecord implements HasIsarId {
   Id? id;
 }
 
-@collection
-class SingletonRecord with BlobRecord, IsarIdRecord {}
+abstract base class SingletonRecord with BlobRecord, IsarIdRecord {}
 
-typedef IsarSingletonCollection = IsarCollection<SingletonRecord>;
+typedef IsarSingletonCollection<R extends SingletonRecord> = IsarCollection<R>;
 
 @collection
 class SequenceRecord {
@@ -96,34 +94,34 @@ extension FrpIsarX on Isar {
     return nextValue;
   }
 
-  Future<Fw<T>> singletonFw<T>({
-    required int id,
-    required BiDi<List<byte>, T> bidi,
-    required T defaultValue,
-    required DspReg disposers,
-  }) async {
-    return singletonRecords.blobRecordFw(
-      id: id,
-      createRecord: SingletonRecord.new,
-      bidi: bidi,
-      defaultValue: defaultValue,
-      disposers: disposers,
-    );
-  }
+// Future<Fw<T>> singletonFw<T>({
+//   required int id,
+//   required BiDi<List<byte>, T> bidi,
+//   required T defaultValue,
+//   required DspReg disposers,
+// }) async {
+//   return singletonRecords.blobRecordFw(
+//     id: id,
+//     createRecord: SingletonRecord.new,
+//     bidi: bidi,
+//     defaultValue: defaultValue,
+//     disposers: disposers,
+//   );
+// }
 
-  Future<Fw<T>> singletonFwProto<T extends GeneratedMessage>({
-    required int id,
-    required T Function() create,
-    T? defaultValue,
-    required DspReg disposers,
-  }) =>
-      singletonFw(
-        id: id,
-        bidi: BiDi.proto(create),
-        defaultValue: defaultValue ?? create()
-          ..freeze(),
-        disposers: disposers,
-      );
+// Future<Fw<T>> singletonFwProto<T extends GeneratedMessage>({
+//   required int id,
+//   required T Function() create,
+//   T? defaultValue,
+//   required DspReg disposers,
+// }) =>
+//     singletonFw(
+//       id: id,
+//       bidi: BiDi.proto(create),
+//       defaultValue: defaultValue ?? create()
+//         ..freeze(),
+//       disposers: disposers,
+//     );
 }
 
 Stream<IList<Id>> Function(int size) isarTakeIds<R extends HasIsarId>({
@@ -496,14 +494,18 @@ extension CustomIsarCollectionX<R> on IsarCollection<R> {
   }
 }
 
-Future<Fw<T>> createIsarSingletonProtoWriteOnlyFw<T extends GeneratedMessage>({
-  @Ext() required Isar isar,
+Future<Fw<T>> createIsarSingletonProtoWriteOnlyFw<T extends GeneratedMessage,
+        R extends SingletonRecord>({
+  @Ext() required IsarSingletonCollection<R> isarSingletonCollection,
+  required CreateValue<R> createRecord,
   required int id,
   required T Function() create,
   T? defaultValue,
   required DspReg disposers,
 }) =>
-    isar.createIsarSingletonWriteOnlyFw(
+    createIsarSingletonWriteOnlyFw(
+      isarSingletonCollection: isarSingletonCollection,
+      createRecord: createRecord,
       id: id,
       bidi: BiDi.proto(create),
       defaultValue: defaultValue ?? create()
@@ -511,16 +513,18 @@ Future<Fw<T>> createIsarSingletonProtoWriteOnlyFw<T extends GeneratedMessage>({
       disposers: disposers,
     );
 
-Future<Fw<T>> createIsarSingletonWriteOnlyFw<T extends Object>({
-  @Ext() required Isar isar,
+Future<Fw<T>> createIsarSingletonWriteOnlyFw<T extends Object,
+    R extends SingletonRecord>({
+  @Ext() required IsarSingletonCollection<R> isarSingletonCollection,
+  required CreateValue<R> createRecord,
   required int id,
   required BiDi<List<byte>, T> bidi,
   required T defaultValue,
   required DspReg disposers,
 }) async {
-  return isar.singletonRecords.createIsarBlobRecordWriteOnlyFw(
+  return isarSingletonCollection.createIsarBlobRecordWriteOnlyFw(
     id: id,
-    createRecord: SingletonRecord.new,
+    createRecord: createRecord,
     bidi: bidi,
     defaultValue: defaultValue,
     disposers: disposers,
@@ -534,42 +538,46 @@ typedef IsarSingletonId = Id;
 // typedef IsarSingletonIdHolder = LateFinal<IsarSingletonId>;
 
 @Has()
-typedef CreateIsarSingletonFw<T> = Future<Fw<T>> Function({
-  required IsarSingletonCollection isarSingletonCollection,
+typedef CreateIsarSingletonFw<T, R extends SingletonRecord> = Future<Fw<T>>
+    Function({
+  required IsarSingletonCollection<R> isarSingletonCollection,
   required IsarSingletonId isarSingletonId,
   required DspReg disposers,
 });
 
 @Compose()
-abstract class IsarSingletonFwFactory<T>
+abstract class IsarSingletonFwFactory<T, R extends SingletonRecord>
     implements
         HasSingletonKeyHolder<IsarSingletonId>,
-        HasCreateIsarSingletonFw<T> {}
+        HasCreateIsarSingletonFw<T, R> {}
 
-Future<Fw<M>> produceIsarSingletonFw<M extends GeneratedMessage>({
-  @Ext() required IsarSingletonFwFactory<M> factory,
-  required Isar isar,
+Future<Fw<M>> produceIsarSingletonFw<R extends SingletonRecord,
+    M extends GeneratedMessage>({
+  @Ext() required IsarSingletonFwFactory<M, R> factory,
+  required IsarSingletonCollection<R> isarSingletonCollection,
   required DspReg disposers,
 }) {
   return factory.createIsarSingletonFw(
-    isarSingletonCollection: isar.singletonRecords,
+    isarSingletonCollection: isarSingletonCollection,
     isarSingletonId: factory.getSingletonKey(),
     disposers: disposers,
   );
 }
 
-typedef IsarSingletonFwFactories<T>
-    = Singletons<IsarSingletonId, IsarSingletonFwFactory<T>>;
+typedef IsarSingletonFwFactories<T, R extends SingletonRecord>
+    = Singletons<IsarSingletonId, IsarSingletonFwFactory<T, R>>;
 
-IsarSingletonFwFactories<T> createIsarSingletonFwFactories<T>(
-  Map<IsarSingletonId, IsarSingletonFwFactory<T>> singletonsByKey,
+IsarSingletonFwFactories<T, R>
+    createIsarSingletonFwFactories<T, R extends SingletonRecord>(
+  Map<IsarSingletonId, IsarSingletonFwFactory<T, R>> singletonsByKey,
 ) {
   return Singletons.holder(singletonsByKey);
 }
 
-IsarSingletonFwFactory<M>
-    createIsarSingletonProtoWriteOnlyFwFactory<M extends GeneratedMessage>({
+IsarSingletonFwFactory<M, R> createIsarSingletonProtoWriteOnlyFwFactory<
+    M extends GeneratedMessage, R extends SingletonRecord>({
   @Ext() required CreateValue<M> createValue,
+  required CreateValue<R> createRecord,
   DefaultValue? defaultValue,
 }) {
   return ComposedIsarSingletonFwFactory(
@@ -581,7 +589,7 @@ IsarSingletonFwFactory<M>
     }) {
       return isarSingletonCollection.createIsarBlobRecordWriteOnlyFw(
         id: isarSingletonId,
-        createRecord: SingletonRecord.new,
+        createRecord: createRecord,
         bidi: BiDi.proto(createValue),
         defaultValue: defaultValue ?? createValue()
           ..freeze(),

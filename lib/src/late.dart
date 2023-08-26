@@ -1,4 +1,6 @@
-typedef Lazy<T> = T Function();
+import 'functions.dart';
+
+typedef Lazy<T> = Call<T>;
 
 class Late<T> {
   final T Function() _factory;
@@ -18,8 +20,13 @@ class Late<T> {
   T call() => value;
 }
 
-Late<T> lazy<T>(T Function() factory) => Late(factory);
+Late<T> lazyOf<T>(T Function() factory) => Late(factory);
 
 class LateFinal<T> {
   late final T value;
+}
+
+Lazy<T> lazy<T>(Call<T> factory) {
+  late final T value = factory();
+  return () => value;
 }
