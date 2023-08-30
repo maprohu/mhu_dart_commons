@@ -67,3 +67,5 @@ Call<T> constantCall<T>(
 ) {
   return () => value;
 }
+
+typedef Lookup<K, V> = V Function(K key);

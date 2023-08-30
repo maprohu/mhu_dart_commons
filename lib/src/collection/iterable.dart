@@ -309,3 +309,8 @@ void iterableZip2ForEach<E1, E2>({
     action(it1.current, it2.current);
   }
 }
+
+typedef Routed<V, E> = ({
+  Iterable<E> route,
+  V value,
+});

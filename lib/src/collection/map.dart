@@ -1,4 +1,5 @@
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+
 // ignore: unused_import
 import 'package:mhu_dart_commons/src/kt.dart';
 
@@ -11,14 +12,7 @@ extension MhuMapOfRequiredValueX<K, V extends Object> on Map<K, V> {
     }
   }
 
-  V getOrThrow(K key) {
-    final value = this[key];
-    if (value == null) {
-      throw 'element not found: $key';
-    } else {
-      return value;
-    }
-  }
+  V getOrThrow(K key) => this[key] ?? (throw ('key not found', key));
 
   V? get(K key) => this[key];
 
