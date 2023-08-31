@@ -1,7 +1,15 @@
 import 'package:collection/collection.dart' as coll;
+import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 
+import 'iterable.dart' as $lib;
+// part 'iterable.g.has.dart';
+part 'iterable.g.dart';
+
 part 'iterable.freezed.dart';
+
+
+
 
 extension MhuIterableX<T> on Iterable<T> {
   bool get allEqualOrEmpty {
@@ -314,3 +322,9 @@ typedef Routed<V, E> = ({
   Iterable<E> route,
   V value,
 });
+
+List<T> iterableToUnmodifiableList<T>({
+  @ext required Iterable<T> iterable,
+}) {
+  return List.unmodifiable(iterable);
+}

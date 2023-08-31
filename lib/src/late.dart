@@ -1,4 +1,11 @@
+import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
+
 import 'functions.dart';
+
+import 'late.dart' as $lib;
+// part 'late.g.has.dart';
+part 'late.g.dart';
+
 
 typedef Lazy<T> = Call<T>;
 
@@ -26,7 +33,9 @@ class LateFinal<T> {
   late final T value;
 }
 
-Lazy<T> lazy<T>(Call<T> factory) {
+Lazy<T> lazy<T>(
+  @ext Call<T> factory,
+) {
   late final T value = factory();
   return () => value;
 }
