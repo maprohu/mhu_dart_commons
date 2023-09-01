@@ -5,6 +5,8 @@ part 'editing.g.has.dart';
 
 part 'editing.g.dart';
 
+// part 'editing.freezed.dart';
+
 @Has()
 typedef DefaultValue<T> = T;
 

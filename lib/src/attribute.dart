@@ -1,8 +1,11 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
+import 'freezed.dart';
 
 part 'attribute.g.dart';
 
 part 'attribute.g.has.dart';
+
+// part 'attribute.freezed.dart';
 
 
 @Has()

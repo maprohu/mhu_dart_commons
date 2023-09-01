@@ -1,6 +1,8 @@
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
-import 'package:mhu_dart_commons/commons.dart';
+import 'attribute.dart';
+import 'freezed.dart';
+import 'late.dart';
 
 import 'singleton.dart' as $lib;
 
@@ -8,6 +10,7 @@ part 'singleton.g.dart';
 
 part 'singleton.g.has.dart';
 
+// part 'singleton.freezed.dart';
 
 @Has()
 typedef SingletonsByKey<K, V> = IMap<K, V>;

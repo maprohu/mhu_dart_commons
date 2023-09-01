@@ -3,13 +3,11 @@ import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 
 import 'iterable.dart' as $lib;
+
 // part 'iterable.g.has.dart';
 part 'iterable.g.dart';
 
 part 'iterable.freezed.dart';
-
-
-
 
 extension MhuIterableX<T> on Iterable<T> {
   bool get allEqualOrEmpty {
@@ -327,4 +325,24 @@ List<T> iterableToUnmodifiableList<T>({
   @ext required Iterable<T> iterable,
 }) {
   return List.unmodifiable(iterable);
+}
+
+Iterable<T> iterableSeparatedBy<T>({
+  @ext required Iterable<T> iterable,
+  required T separator,
+}) {
+  return iterable.separatedBy(separator);
+}
+
+Iterable<T> iterableSeparatedByNullable<T>({
+  @ext required Iterable<T> iterable,
+  required T? separator,
+}) {
+  if (separator == null) {
+    return iterable;
+  } else {
+    return iterable.iterableSeparatedBy(
+      separator: separator,
+    );
+  }
 }

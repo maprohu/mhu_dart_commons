@@ -15,6 +15,7 @@ import 'dispose.dart';
 import 'editing.dart';
 import 'freezed.dart';
 import 'frp.dart';
+import 'late.dart';
 import 'property.dart';
 
 export 'isar_gen.dart' hide Isar;
