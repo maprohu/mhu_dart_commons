@@ -9,6 +9,8 @@ import 'kt.dart';
 
 part 'proto.freezed.dart';
 
+typedef Msg = GeneratedMessage;
+
 extension MhuBaseGeneratedMessageX<M extends GeneratedMessage> on M {
   M deepRebuild(void Function(M message) updates) {
     return deepCopy().also(updates)..freeze();

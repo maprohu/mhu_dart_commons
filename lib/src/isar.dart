@@ -22,6 +22,7 @@ export 'isar_gen.dart' hide Isar;
 
 import 'isar.dart' as $lib;
 import 'singleton.dart';
+import 'watch.dart';
 
 part 'isar.g.dart';
 
@@ -258,8 +259,8 @@ extension BlobRecordIsarCollectionX<R extends BlobRecord> on IsarCollection<R> {
   }
 }
 
-Future<Fw<T>>
-    createIsarBlobRecordWriteOnlyFw<R extends BlobRecord, T extends Object>({
+Future<WatchMessage<T>>
+    createIsarBlobRecordWriteOnlyWatch<R extends BlobRecord, T extends Object>({
   @Ext() required IsarCollection<R> isarCollection,
   required int id,
   required R Function() createRecord,
@@ -267,7 +268,7 @@ Future<Fw<T>>
   required T defaultValue,
   required DspReg disposers,
 }) async {
-  return isarCollection.createIsarCollectionRecordWriteOnlyFw(
+  return isarCollection.createIsarCollectionRecordWriteOnlyWatch(
     id: id,
     bidi: BiDi(
       forward: (record) => bidi.forward(record.blob),
@@ -278,8 +279,8 @@ Future<Fw<T>>
   );
 }
 
-Future<Fw<T>> createIsarCollectionRecordWriteOnlyFw<R extends HasIsarId,
-    T extends Object>({
+Future<WatchMessage<T>> createIsarCollectionRecordWriteOnlyWatch<
+    R extends HasIsarId, T extends Object>({
   @Ext() required IsarCollection<R> isarCollection,
   required int id,
   required BiDi<R, T> bidi,
@@ -288,7 +289,7 @@ Future<Fw<T>> createIsarCollectionRecordWriteOnlyFw<R extends HasIsarId,
 }) async {
   T parse(R? record) => record?.let(bidi.forward) ?? defaultValue;
 
-  final result = disposers.fw(
+  final result = disposers.watchVar(
     parse(
       await isarCollection.get(id),
     ),
@@ -305,12 +306,14 @@ Future<Fw<T>> createIsarCollectionRecordWriteOnlyFw<R extends HasIsarId,
     },
   );
 
-  return Fw.fromFr(
-    fr: result,
-    set: (value) {
-      writer.submit(value);
-      result.set(value);
-    },
+  return ComposedWatchMessage.watchWrite(
+    watchWrite: result.watchReadWrite(
+      write: (value) {
+        writer.submit(value);
+        result.writeValue(value);
+      },
+    ),
+    callDefaultMessage: () => defaultValue,
   );
 }
 
@@ -495,8 +498,8 @@ extension CustomIsarCollectionX<R> on IsarCollection<R> {
   }
 }
 
-Future<Fw<T>> createIsarSingletonProtoWriteOnlyFw<T extends GeneratedMessage,
-        R extends SingletonRecord>({
+Future<WatchMessage<T>> createIsarSingletonProtoWriteOnlyWatch<
+        T extends GeneratedMessage, R extends SingletonRecord>({
   @Ext() required IsarSingletonCollection<R> isarSingletonCollection,
   required CreateValue<R> createRecord,
   required int id,
@@ -504,7 +507,7 @@ Future<Fw<T>> createIsarSingletonProtoWriteOnlyFw<T extends GeneratedMessage,
   T? defaultValue,
   required DspReg disposers,
 }) =>
-    createIsarSingletonWriteOnlyFw(
+    createIsarSingletonWriteOnlyWatch(
       isarSingletonCollection: isarSingletonCollection,
       createRecord: createRecord,
       id: id,
@@ -514,7 +517,7 @@ Future<Fw<T>> createIsarSingletonProtoWriteOnlyFw<T extends GeneratedMessage,
       disposers: disposers,
     );
 
-Future<Fw<T>> createIsarSingletonWriteOnlyFw<T extends Object,
+Future<WatchMessage<T>> createIsarSingletonWriteOnlyWatch<T extends Object,
     R extends SingletonRecord>({
   @Ext() required IsarSingletonCollection<R> isarSingletonCollection,
   required CreateValue<R> createRecord,
@@ -523,7 +526,7 @@ Future<Fw<T>> createIsarSingletonWriteOnlyFw<T extends Object,
   required T defaultValue,
   required DspReg disposers,
 }) async {
-  return isarSingletonCollection.createIsarBlobRecordWriteOnlyFw(
+  return isarSingletonCollection.createIsarBlobRecordWriteOnlyWatch(
     id: id,
     createRecord: createRecord,
     bidi: bidi,
@@ -539,56 +542,56 @@ typedef IsarSingletonId = Id;
 // typedef IsarSingletonIdHolder = LateFinal<IsarSingletonId>;
 
 @Has()
-typedef CreateIsarSingletonFw<T, R extends SingletonRecord> = Future<Fw<T>>
-    Function({
+typedef CreateIsarSingletonWatch<T extends Object, R extends SingletonRecord>
+    = Future<WatchMessage<T>> Function({
   required IsarSingletonCollection<R> isarSingletonCollection,
   required IsarSingletonId isarSingletonId,
   required DspReg disposers,
 });
 
 @Compose()
-abstract class IsarSingletonFwFactory<T, R extends SingletonRecord>
+abstract class IsarSingletonWatchFactory<T extends Object, R extends SingletonRecord>
     implements
         HasSingletonKeyHolder<IsarSingletonId>,
-        HasCreateIsarSingletonFw<T, R> {}
+        HasCreateIsarSingletonWatch<T, R> {}
 
-Future<Fw<M>> produceIsarSingletonFw<R extends SingletonRecord,
+Future<WatchProto<M>> produceIsarSingletonWatch<R extends SingletonRecord,
     M extends GeneratedMessage>({
-  @Ext() required IsarSingletonFwFactory<M, R> factory,
+  @Ext() required IsarSingletonWatchFactory<M, R> factory,
   required IsarSingletonCollection<R> isarSingletonCollection,
   required DspReg disposers,
 }) {
-  return factory.createIsarSingletonFw(
+  return factory.createIsarSingletonWatch(
     isarSingletonCollection: isarSingletonCollection,
     isarSingletonId: factory.getSingletonKey(),
     disposers: disposers,
   );
 }
 
-typedef IsarSingletonFwFactories<T, R extends SingletonRecord>
-    = Singletons<IsarSingletonId, IsarSingletonFwFactory<T, R>>;
+typedef IsarSingletonFwFactories<T extends Object, R extends SingletonRecord>
+    = Singletons<IsarSingletonId, IsarSingletonWatchFactory<T, R>>;
 
 IsarSingletonFwFactories<T, R>
-    createIsarSingletonFwFactories<T, R extends SingletonRecord>(
-  Map<IsarSingletonId, IsarSingletonFwFactory<T, R>> singletonsByKey,
+    createIsarSingletonWatchFactories<T extends Object, R extends SingletonRecord>(
+  Map<IsarSingletonId, IsarSingletonWatchFactory<T, R>> singletonsByKey,
 ) {
   return Singletons.holder(singletonsByKey);
 }
 
-IsarSingletonFwFactory<M, R> createIsarSingletonProtoWriteOnlyFwFactory<
+IsarSingletonWatchFactory<M, R> createIsarSingletonProtoWriteOnlyWatchFactory<
     M extends GeneratedMessage, R extends SingletonRecord>({
   @Ext() required CreateValue<M> createValue,
   required CreateValue<R> createRecord,
   DefaultValue? defaultValue,
 }) {
-  return ComposedIsarSingletonFwFactory(
+  return ComposedIsarSingletonWatchFactory(
     singletonKeyHolder: SingletonKeyHolder(),
-    createIsarSingletonFw: ({
+    createIsarSingletonWatch: ({
       required disposers,
       required isarSingletonCollection,
       required isarSingletonId,
     }) {
-      return isarSingletonCollection.createIsarBlobRecordWriteOnlyFw(
+      return isarSingletonCollection.createIsarBlobRecordWriteOnlyWatch(
         id: isarSingletonId,
         createRecord: createRecord,
         bidi: BiDi.proto(createValue),

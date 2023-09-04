@@ -41,3 +41,5 @@ export 'src/label.dart';
 export 'src/singleton.dart';
 export 'src/int.dart';
 export 'src/context.dart';
+export 'src/watch.dart';
+export 'src/pause.dart';
