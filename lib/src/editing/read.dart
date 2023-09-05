@@ -30,9 +30,18 @@ HasReadValue<V> mapReadValue<T, V>({
   @ext required HasReadValue<T> readValue,
   required HasReadAttribute<T, V> readAttribute,
 }) {
-  return ComposedReadValue(
+  final result = ComposedReadValue<V>(
     readValue: () => readAttribute.readAttribute(
       readValue.readValue(),
     ),
   );
+
+  assert(
+    run(() {
+      result.readValue();
+      return true;
+    }),
+  );
+
+  return result;
 }

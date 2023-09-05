@@ -268,6 +268,7 @@ Future<WatchMessage<T>>
   required T defaultValue,
   required DspReg disposers,
 }) async {
+  assert(T != Object);
   return isarCollection.createIsarCollectionRecordWriteOnlyWatch(
     id: id,
     bidi: BiDi(
@@ -561,6 +562,7 @@ Future<WatchProto<M>> produceIsarSingletonWatch<R extends SingletonRecord,
   required IsarSingletonCollection<R> isarSingletonCollection,
   required DspReg disposers,
 }) {
+  assert(M != GeneratedMessage);
   return factory.createIsarSingletonWatch(
     isarSingletonCollection: isarSingletonCollection,
     isarSingletonId: factory.getSingletonKey(),
@@ -584,7 +586,8 @@ IsarSingletonWatchFactory<M, R> createIsarSingletonProtoWriteOnlyWatchFactory<
   required CreateValue<R> createRecord,
   DefaultValue? defaultValue,
 }) {
-  return ComposedIsarSingletonWatchFactory(
+  assert(M != GeneratedMessage);
+  return ComposedIsarSingletonWatchFactory<M, R>(
     singletonKeyHolder: SingletonKeyHolder(),
     createIsarSingletonWatch: ({
       required disposers,

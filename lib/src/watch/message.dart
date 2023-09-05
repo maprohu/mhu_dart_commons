@@ -5,9 +5,12 @@ WatchWrite<F?> mapWatchMessageWrite<M extends Object, F extends Object>({
   required ReadWriteAttribute<M, F?> readWriteAttribute,
   required RebuildMessage<M> rebuildMessage,
 }) {
+  assert(M != Msg);
+  assert(F != Object);
+
   return ComposedWatchWrite.watchRead(
     watchRead: watchMessage.mapWatchRead(
-      readAttribute: readWriteAttribute,
+      readAttribute: readWriteAttribute.readOptAttribute(),
     ),
     writeValue: watchMessage
         .watchMessageWriteValue(
@@ -65,9 +68,11 @@ WatchMessage<F> mapWatchMessageMessage<M extends Object, F extends Object>({
   required ReadWriteAttribute<M, F?> readWriteAttribute,
   required DefaultMessage<F> defaultMessage,
 }) {
+  assert(M != Object);
+  assert(F != Object);
   return ComposedWatchMessage.watchRead(
     watchRead: watchMessage.mapWatchRead(
-      readAttribute: readWriteAttribute,
+      readAttribute: readWriteAttribute.readOptAttribute(),
     ),
     callDefaultMessage: () => defaultMessage,
     writeValue: watchMessage

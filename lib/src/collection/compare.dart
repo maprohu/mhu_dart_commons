@@ -1,3 +1,5 @@
+import 'package:fixnum/fixnum.dart';
+
 import 'compare.dart' as this_lib;
 
 extension MhuComparatorX<T> on Comparator<T> {
@@ -77,6 +79,8 @@ int compareNaturalOrder(dynamic a, dynamic b) => (a as Comparable).compareTo(b);
 int compareTo<C extends Comparable<C>>(C a, C b) => a.compareTo(b);
 
 int compareToNum(num a, num b) => a.compareTo(b);
+
+int compareToInt64(Int64 a, Int64 b) => a.compareTo(b);
 
 Comparator<T> compareByFieldNum<T>(
   num Function(T t) fieldValue,
@@ -160,6 +164,7 @@ extension CompareAnyX<T> on T {
 }
 
 int intCompare(int a, int b) => a - b;
+
 int stringCompare(String a, String b) => a.compareTo(b);
 
 int reversedIntCompare(int a, int b) => b - a;
@@ -173,6 +178,28 @@ int iterableCompare<E extends Comparable<E>>(
       b,
       comparator: compareTo<E>,
     );
+
+int compareToBool(bool a, bool b) {
+  if (a == b) {
+    return 0;
+  } else if (b) {
+    return 1;
+  } else {
+    return -1;
+  }
+}
+
+Comparator<Iterable<E>> iterableComparator<E>({
+  Comparator<E> comparator = compareNaturalOrder,
+}) {
+  return (a, b) {
+    return iterableCompareNaturalOrder(
+      a,
+      b,
+      comparator: comparator,
+    );
+  };
+}
 
 int iterableCompareNaturalOrder<E>(
   Iterable<E> a,

@@ -1,11 +1,11 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
-import 'freezed.dart';
 
+import 'attribute.dart' as $lib;
 part 'attribute.g.dart';
 
 part 'attribute.g.has.dart';
 
-// part 'attribute.freezed.dart';
+
 
 
 @Has()
@@ -93,4 +93,17 @@ extension HasEnsureAttributeX<O, A> on ReadEnsureAttribute<O, A> {
       },
     );
   }
+}
+
+HasReadAttribute<O?, A?> readOptAttribute<O extends Object, A extends Object>({
+  @ext required HasReadAttribute<O, A?> readAttribute,
+}) {
+  return ComposedReadAttribute(
+    readAttribute: (object) {
+      if (object == null) {
+        return null;
+      }
+      return readAttribute.readAttribute(object);
+    },
+  );
 }

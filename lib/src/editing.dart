@@ -53,6 +53,8 @@ typedef UpdateValue<T> = void Function(
   void Function(T value) updates,
 );
 
+typedef MutableUpdates<T> = void Function(T object);
+
 @Has()
 typedef DefaultMessage<O> = O;
 
