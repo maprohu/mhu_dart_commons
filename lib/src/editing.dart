@@ -4,8 +4,6 @@ import 'package:protobuf/protobuf.dart';
 
 import 'editing.dart' as $lib;
 
-
-
 part 'editing.g.has.dart';
 
 part 'editing.g.dart';
@@ -23,6 +21,8 @@ part 'editing/watch.dart';
 part 'editing/map.dart';
 
 part 'editing/proto.dart';
+
+part 'editing/async.dart';
 
 // part 'editing.freezed.dart';
 
