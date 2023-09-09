@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:protobuf/protobuf.dart';
@@ -24,6 +27,8 @@ part 'editing/proto.dart';
 
 part 'editing/async.dart';
 
+part 'editing/reload.dart';
+
 // part 'editing.freezed.dart';
 
 @Has()
@@ -48,9 +53,12 @@ typedef WriteValue<T> = void Function(T value);
 typedef WatchValue<T> = T Function();
 
 @Has()
+typedef Updates<T> = void Function(T value);
+
+@Has()
 @Compose()
 typedef UpdateValue<T> = void Function(
-  void Function(T value) updates,
+  Updates<T> updates,
 );
 
 typedef MutableUpdates<T> = void Function(T object);

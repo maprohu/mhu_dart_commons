@@ -1,11 +1,11 @@
 part of '../editing.dart';
 
-extension ReadWriteValueX<T> on ReadWriteValue<T> {
+extension ReadWriteValueX<T> on HasWriteValue<T> {
   set value(T value) {
     writeValue(value);
   }
 
-  T get value => readValue();
+  // T get value => readValue();
 }
 
 void updateReadWriteValue<T>(

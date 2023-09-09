@@ -321,6 +321,13 @@ typedef Routed<V, E> = ({
   V value,
 });
 
+@Deprecated("use iterableToUnmodifiableList")
+List<T> iterableToImmutableList<T>({
+  @ext required Iterable<T> iterable,
+}) {
+  return iterable.iterableToUnmodifiableList();
+}
+
 List<T> iterableToUnmodifiableList<T>({
   @ext required Iterable<T> iterable,
 }) {

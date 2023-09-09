@@ -6,6 +6,7 @@ import 'package:protobuf/protobuf.dart';
 
 import 'functions.dart' as functions;
 
+@Deprecated("use Lift")
 abstract interface class BiDi<A, B> {
   B forward(A a);
 

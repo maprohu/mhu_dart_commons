@@ -81,6 +81,7 @@ W lookupSingletonByType<K, V, W extends V>({
   @Ext() required Singletons<K, V> singletons,
 }) {
   return singletons.singletonsByType.putIfAbsent(W, () {
-    return singletons.singletonsByKey.values.singleWhere((e) => e is W);
+    return singletons.singletonsByKey.values.whereType<W>().singleOrNull ??
+        (throw W);
   }) as W;
 }

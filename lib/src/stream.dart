@@ -1,11 +1,18 @@
 import 'dart:async';
 
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'dispose.dart';
 import 'freezed.dart';
 import 'functions.dart';
+
+import 'stream.dart' as $lib;
+// part 'stream.g.has.dart';
+part 'stream.g.dart';
+// part 'stream.freezed.dart';
+
 
 part 'stream.freezed.dart';
 
@@ -116,4 +123,10 @@ extension StreamOfISetX<T> on Stream<ISet<T>> {
 
     disposers.add(listening.cancel);
   }
+}
+
+Stream<T> streamTail<T>({
+  @ext required Stream<T> stream,
+}) {
+  return stream.skip(1);
 }

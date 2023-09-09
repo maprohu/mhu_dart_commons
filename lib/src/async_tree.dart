@@ -15,20 +15,24 @@ typedef TreeLeafData<L> = L;
 typedef TreeBranchData<B> = B;
 
 @Has()
-typedef AsyncTreeChildren<B, L> = ReadWatchFuture<IList<AsyncTreeNode<B, L>>>;
+typedef AsyncTreeNodeList<B, L> = IList<AsyncTreeNode<B, L>>;
 
 @Has()
-typedef AsyncTreeParent<B, L> = ReadWatchFuture<AsyncTreeNode<B, L>>
-    Function()?;
+typedef AsyncTreeParent<B, L> = Call<AsyncTreeBranch<B, L>>?;
 
 @Has()
 sealed class AsyncTreeNode<B, L> implements HasAsyncTreeParent<B, L> {}
 
+@Has()
+typedef WatchAsyncTreeChildren<B, L>
+    = CancelableCallDsp<ReadWatchValue<AsyncTreeNodeList<B, L>>>;
+
 @Compose()
+@Has()
 abstract class AsyncTreeBranch<B, L>
     implements
         AsyncTreeNode<B, L>,
-        HasCallAsyncTreeChildren<B, L>,
+        HasWatchAsyncTreeChildren<B, L>,
         HasTreeBranchData<B> {}
 
 @Compose()

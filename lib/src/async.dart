@@ -1,8 +1,13 @@
 import 'dart:async';
 
-
+import 'package:async/async.dart';
 import 'package:logger/logger.dart';
+import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
+
+import 'async.dart' as $lib;
+
+part 'async.g.dart';
 
 final _logger = Logger();
 
@@ -116,4 +121,23 @@ class LatestExecutor<T> {
       await _working?.future;
     });
   }
+}
+
+CancelableOperation<T> constantCancelableOperation<T>({
+  @ext required T value,
+}) {
+  return CancelableOperation.fromValue(value);
+}
+
+CancelableOperation<B> thenCancelable<A, B>({
+  @ext required CancelableOperation<A> cancelableOperation,
+  required CancelableOperation<B> Function(A result) then,
+}) {
+  return cancelableOperation.thenOperation(
+    (result, completer) {
+      completer.completeOperation(
+        then(result),
+      );
+    },
+  );
 }

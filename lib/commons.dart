@@ -44,3 +44,4 @@ export 'src/context.dart';
 export 'src/watch.dart';
 export 'src/pause.dart';
 export 'src/async_tree.dart';
+export 'src/lift.dart';

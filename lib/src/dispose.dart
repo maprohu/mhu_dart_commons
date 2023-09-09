@@ -3,8 +3,13 @@ import 'dart:async';
 import 'package:logger/logger.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 
+import 'functions.dart';
+
+import 'dispose.dart' as $lib;
+
 part 'dispose.g.has.dart';
-// part 'dispose.g.compose.dart';
+
+part 'dispose.g.dart';
 
 final _logger = Logger();
 
@@ -12,6 +17,14 @@ final _logger = Logger();
 typedef Disposers = DspReg;
 
 typedef DisposeAction = FutureOr<void> Function();
+
+typedef DisposableRecord<T> = ({
+  DspImpl disposers,
+  T data,
+});
+
+typedef CreateDisposable<T> = T Function(DspReg disposers);
+typedef AsyncCreateDisposable<T> = Future<T> Function(DspReg disposers);
 
 abstract interface class Disposable {
   FutureOr<void> dispose();
@@ -169,4 +182,22 @@ extension AcquireX<T> on Future<T> Function(DspReg disposers) {
       },
     );
   }
+}
+
+void disposeVoidCall({
+  @ext required VoidCall voidCall,
+  @ext required DspReg disposers,
+}) {
+  disposers.add(voidCall);
+}
+
+DisposableRecord<T> disposableRecordCall<T>({
+  @ext required CallDsp<T> callDsp,
+}) {
+  final disposers = DspImpl();
+  final data = callDsp(disposers);
+  return (
+    data: data,
+    disposers: disposers,
+  );
 }

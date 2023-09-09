@@ -1,4 +1,8 @@
+import 'dart:async';
+
+import 'package:async/async.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
+import 'package:mhu_dart_commons/commons.dart';
 import 'functions.dart' as $lib;
 
 part 'functions.g.dart';
@@ -55,6 +59,17 @@ extension AsyncCallbackX<T> on Future<void> Function(T value) {
 }
 
 typedef Call<T> = T Function();
+typedef CallDsp<T> = T Function(DspReg disposers);
+typedef AsyncCall<T> = Call<Future<T>>;
+typedef AsyncCallDsp<T> = CallDsp<Future<T>>;
+typedef CancelableCall<T> = Call<CancelableOperation<T>>;
+typedef CancelableCallDsp<T> = CallDsp<CancelableOperation<T>>;
+
+typedef VoidCall = Call<void>;
+typedef AsyncVoidCall = AsyncCall<void>;
+
+typedef Convert<A, B> = B Function(A value);
+
 
 extension CallAnyX<T> on T {
   Call<T> get toCall => () => this;
@@ -69,3 +84,31 @@ Call<T> constantCall<T>(
 }
 
 typedef Lookup<K, V> = V Function(K key);
+
+CancelableOperation<T> cancelableOperation<T extends Object>(
+  Future<T?> Function(Call<bool> canceled) builder,
+) {
+  final completer = Completer<T>();
+
+  var canceled = false;
+  () async {
+    try {
+      final result = await builder(() => canceled);
+      if (result != null) {
+        completer.complete(result);
+      }
+    } catch (e) {
+      completer.completeError(e);
+    }
+  }();
+
+  return CancelableOperation.fromFuture(
+    completer.future,
+    onCancel: () => canceled = true,
+  );
+}
+
+VoidCall once(VoidCall call) {
+  late final value = call();
+  return () => value;
+}
