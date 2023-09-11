@@ -1,5 +1,6 @@
 part of 'frp.dart';
 
+@Deprecated("Use watchVar()")
 Fw<T> fw<T>(
   T value, {
   DspReg? disposers,
@@ -16,6 +17,7 @@ Fr<T> frHot<T>(
       _Calc((_) => calc()),
     )..disposeBy(disposers);
 
+@Deprecated("Use watching()")
 Fr<T> fr<T>(
   T Function() calc, {
   DspReg? disposers,

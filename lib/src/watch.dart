@@ -45,7 +45,5 @@ abstract class WatchUpdate<T> implements WatchRead<T?>, MutableValue<T> {}
 
 @Compose()
 abstract class WatchMessage<T extends Object>
-    implements
-        WatchRead<T?>,
-        WatchWrite<T?>,
-        MessageValue<T> {}
+    implements WatchRead<T?>, WatchWrite<T?>, MessageValue<T> {}
+

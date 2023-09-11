@@ -39,6 +39,24 @@ HasUpdateValue<M> watchMessageUpdate<M extends Object>({
   );
 }
 
+HasUpdateValue<M> watchWriteUpdate<M extends Object>({
+  @ext required WatchWrite<M> watchMessage,
+  required RebuildMessage<M> rebuildMessage,
+}) {
+  return ComposedUpdateValue(
+    updateValue: (updates) {
+      final msg = watchMessage.readValue();
+
+      watchMessage.writeValue(
+        rebuildMessage(
+          msg,
+          updates,
+        ),
+      );
+    },
+  );
+}
+
 HasWriteValue<F> watchMessageWriteValue<M extends Object, F>({
   @ext required WatchMessage<M> watchMessage,
   required HasWriteAttribute<M, F> writeAttribute,
@@ -97,7 +115,7 @@ M watchOrDefaultMessage<M extends Object>({
 }
 
 WatchMessage<M> watchWriteMessage<M extends Object>({
-  @ext required WatchWrite<M> watchWrite,
+  @ext required WatchWrite<M?> watchWrite,
   required CallDefaultMessage<M> getDefault,
 }) {
   return ComposedWatchMessage.watchWrite(

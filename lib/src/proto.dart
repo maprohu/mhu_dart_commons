@@ -2,6 +2,7 @@
 import 'package:protobuf/protobuf.dart';
 
 import 'collection/compare.dart';
+import 'editing.dart';
 import 'freezed.dart';
 import 'frp.dart';
 import 'string.dart';
@@ -10,6 +11,8 @@ import 'kt.dart';
 part 'proto.freezed.dart';
 
 typedef Msg = GeneratedMessage;
+
+typedef CreateMsg<M extends Msg> = CreateValue<M>;
 
 extension MhuBaseGeneratedMessageX<M extends GeneratedMessage> on M {
   M deepRebuild(void Function(M message) updates) {

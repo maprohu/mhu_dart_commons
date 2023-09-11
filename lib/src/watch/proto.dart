@@ -38,6 +38,21 @@ HasUpdateValue<M> watchProtoUpdate<M extends Msg>({
   );
 }
 
+HasUpdateValue<M> watchProtoDeepUpdate<M extends Msg>({
+  @ext required WatchProto<M> watchProto,
+}) {
+  return watchProto.watchMessageUpdate(
+    rebuildMessage: deepRebuildProtoMessage,
+  );
+}
+
+HasUpdateValue<M> watchWriteMsgDeepUpdate<M extends Msg>({
+  @ext required WatchWrite<M> watchProto,
+}) {
+  return watchProto.watchWriteUpdate(
+    rebuildMessage: deepRebuildProtoMessage,
+  );
+}
 void rebuildWatchProto<M extends Msg>(
   @ext WatchProto<M> watchProto,
   MutableUpdates<M> updates,

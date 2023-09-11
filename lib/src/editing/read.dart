@@ -30,8 +30,17 @@ HasReadValue<V> mapReadValue<T, V>({
   @ext required HasReadValue<T> readValue,
   required HasReadAttribute<T, V> readAttribute,
 }) {
+  return readValue.mapReadValueFn(
+    readAttribute: readAttribute.readAttribute,
+  );
+}
+
+HasReadValue<V> mapReadValueFn<T, V>({
+  @ext required HasReadValue<T> readValue,
+  required ReadAttribute<T, V> readAttribute,
+}) {
   final result = ComposedReadValue<V>(
-    readValue: () => readAttribute.readAttribute(
+    readValue: () => readAttribute(
       readValue.readValue(),
     ),
   );

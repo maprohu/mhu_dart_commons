@@ -41,7 +41,7 @@ bool doubleEqualWithin3Decimals(double a, double b) =>
     doubleRoughlyEqual(a, b, 0.001);
 
 bool assertDoubleRoughlyEqual(double a, double b) {
-  assert(doubleRoughlyEqual(a, b, 0.001));
+  assert(doubleRoughlyEqual(a, b, 0.001), (a, b));
   return true;
 }
 

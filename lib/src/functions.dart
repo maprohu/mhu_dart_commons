@@ -3,9 +3,14 @@ import 'dart:async';
 import 'package:async/async.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
+
 import 'functions.dart' as $lib;
+// part 'functions.g.has.dart';
 
 part 'functions.g.dart';
+
+part 'functions/drain.dart';
+part 'functions/convert.dart';
 
 T identity<T>(T value) => value;
 
@@ -68,7 +73,6 @@ typedef CancelableCallDsp<T> = CallDsp<CancelableOperation<T>>;
 typedef VoidCall = Call<void>;
 typedef AsyncVoidCall = AsyncCall<void>;
 
-typedef Convert<A, B> = B Function(A value);
 
 
 extension CallAnyX<T> on T {
@@ -111,4 +115,11 @@ CancelableOperation<T> cancelableOperation<T extends Object>(
 VoidCall once(VoidCall call) {
   late final value = call();
   return () => value;
+}
+
+C Function(A a) functionComposition<A, B, C>({
+  @ext required B Function(A a) aToB,
+  required C Function(B b) bToC,
+}) {
+  return (a) => bToC(aToB(a));
 }

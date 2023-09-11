@@ -15,10 +15,17 @@ WatchRead<V> mapWatchRead<T, V>({
   @ext required WatchRead<T> watchRead,
   required HasReadAttribute<T, V> readAttribute,
 }) {
+  return watchRead.mapWatchReadFn$(readAttribute.readAttribute);
+}
+
+WatchRead<V> mapWatchReadFn<T, V>({
+  @ext required WatchRead<T> watchRead,
+  required ReadAttribute<T, V> readAttribute,
+}) {
   return ComposedWatchRead.readWatchValue(
-    readWatchValue: watchRead.mapReadWatchValue$(readAttribute),
+    readWatchValue: watchRead.mapReadWatchValueFn$(readAttribute),
     distinctValues: () =>
-        watchRead.distinctValues().map(readAttribute.readAttribute).distinct(),
+        watchRead.distinctValues().map(readAttribute).distinct(),
     runPaused: watchRead.runPaused,
   );
 }

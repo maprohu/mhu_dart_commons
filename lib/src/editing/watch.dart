@@ -89,8 +89,15 @@ HasWatchValue<V> mapWatchValue<T, V>({
   @ext required HasWatchValue<T> watchValue,
   required HasReadAttribute<T, V> readAttribute,
 }) {
+  return watchValue.mapWatchValueFn$(readAttribute.readAttribute);
+}
+
+HasWatchValue<V> mapWatchValueFn<T, V>({
+  @ext required HasWatchValue<T> watchValue,
+  required ReadAttribute<T, V> readAttribute,
+}) {
   return ComposedWatchValue(
-    watchValue: () => readAttribute.readAttribute(
+    watchValue: () => readAttribute(
       watchValue(),
     ),
   );
@@ -100,9 +107,16 @@ ReadWatchValue<V> mapReadWatchValue<T, V>({
   @ext required ReadWatchValue<T> readWatchValue,
   required HasReadAttribute<T, V> readAttribute,
 }) {
+  return readWatchValue.mapReadWatchValueFn$(readAttribute.readAttribute);
+}
+
+ReadWatchValue<V> mapReadWatchValueFn<T, V>({
+  @ext required ReadWatchValue<T> readWatchValue,
+  required ReadAttribute<T, V> readAttribute,
+}) {
   return ComposedReadWatchValue(
-    readValue: readWatchValue.mapReadValue$(readAttribute).readValue,
-    watchValue: readWatchValue.mapWatchValue$(readAttribute).watchValue,
+    readValue: readWatchValue.mapReadValueFn$(readAttribute).readValue,
+    watchValue: readWatchValue.mapWatchValueFn$(readAttribute).watchValue,
   );
 }
 
