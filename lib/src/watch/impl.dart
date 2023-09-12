@@ -142,7 +142,7 @@ class _WatchWriteImpl<T> implements Disposable {
     final calling = _calling;
 
     if (calling == null) {
-      throw 'Frb.watch() called without a _Calc';
+      throw '_WatchWriteImpl.watch() called without a _WatchCalc';
     }
 
     if (_downstream.add(calling)) {

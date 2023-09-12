@@ -74,6 +74,8 @@ typedef VoidCall = Call<void>;
 typedef AsyncVoidCall = AsyncCall<void>;
 
 
+typedef Callback<T> = void Function(T value);
+
 
 extension CallAnyX<T> on T {
   Call<T> get toCall => () => this;

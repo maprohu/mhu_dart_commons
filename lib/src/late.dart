@@ -3,9 +3,9 @@ import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'functions.dart';
 
 import 'late.dart' as $lib;
+
 // part 'late.g.has.dart';
 part 'late.g.dart';
-
 
 typedef Lazy<T> = Call<T>;
 
@@ -38,4 +38,32 @@ Lazy<T> lazy<T>(
 ) {
   late final T value = factory();
   return () => value;
+}
+
+class SingleAssign<T> {
+  final Callback<T>? _callback;
+  late final T _value;
+
+  late Call<T> _getter;
+
+  SingleAssign({
+    Callback<T>? callback,
+  }) : _callback = callback {
+    _getter = () => _value;
+  }
+
+  SingleAssign.withDefault({
+    Callback<T>? callback,
+    required T defaultValue,
+  }) : _callback = callback {
+    _getter = () => defaultValue;
+  }
+
+  T get value => _getter();
+
+  set value(T value) {
+    _value = value;
+    _getter = () => _value;
+    _callback?.call(value);
+  }
 }
