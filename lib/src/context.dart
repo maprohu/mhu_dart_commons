@@ -1,6 +1,7 @@
+import 'functions.dart';
 import 'holder.dart';
 
-typedef VoidContextExecutor = R Function<R>(R Function() action);
+typedef VoidContextExecutor = Execute;
 typedef ContextExecutor<C> = R Function<R>(R Function(C context) action);
 
 ContextExecutor<C> createContextExecutor<C>({

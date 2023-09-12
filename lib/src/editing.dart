@@ -79,6 +79,7 @@ typedef RebuildMessage<O> = O Function(
 @Compose()
 abstract class ReadWatchValue<T> implements HasReadValue<T>, HasWatchValue<T> {}
 
+@Compose()
 abstract class ReadWriteValue<T> implements HasReadValue<T>, HasWriteValue<T> {}
 
 @Compose()
