@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:collection/collection.dart' as coll;
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
@@ -8,6 +10,8 @@ import 'iterable.dart' as $lib;
 part 'iterable.g.dart';
 
 part 'iterable.freezed.dart';
+
+part 'iterable/int.dart';
 
 extension MhuIterableX<T> on Iterable<T> {
   bool get allEqualOrEmpty {
