@@ -6,8 +6,10 @@ import 'package:mhu_dart_commons/src/kt.dart';
 
 import 'map.dart' as $lib;
 
-// part 'map.g.has.dart';
+part 'map.g.has.dart';
 part 'map.g.dart';
+
+part 'map/bimap.dart';
 
 extension MhuMapOfRequiredValueX<K, V extends Object> on Map<K, V> {
   void putOrRemove(K key, V? value) {
@@ -45,4 +47,11 @@ MapEntry<K, V> valueToMapEntry<K, V>({
   required K key,
 }) {
   return MapEntry(key, value);
+}
+
+V imapGetOrThrow<K extends Object, V>({
+  @ext required IMap<K, V> map,
+  required K key,
+}) {
+  return map[key] ?? (throw key);
 }

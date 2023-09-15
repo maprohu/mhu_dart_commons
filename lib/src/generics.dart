@@ -27,3 +27,9 @@ String genericFunctionTypeName<T>({
 }) {
   return genericFunction(<TT extends T>() => TT.toString());
 }
+
+Type genericFunctionType<T>({
+  @ext required GenericFunction1<T> genericFunction,
+}) {
+  return genericFunction(<TT extends T>() => TT);
+}

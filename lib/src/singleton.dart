@@ -10,6 +10,8 @@ part 'singleton.g.dart';
 
 part 'singleton.g.has.dart';
 
+part 'singleton/value.dart';
+
 // part 'singleton.freezed.dart';
 
 @Has()
